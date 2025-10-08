@@ -1,0 +1,18 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw events table",
+  tags: ["staging"]
+}
+
+select
+  event_id,
+  user_id,
+  product_id,
+  sequence_number,
+  event_type,
+  created_at,
+  traffice_source,
+  user_agent,
+from
+  ${ref("events")}
