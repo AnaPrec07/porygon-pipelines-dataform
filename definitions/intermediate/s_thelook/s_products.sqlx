@@ -1,0 +1,16 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw products table",
+  tags: ["staging"]
+}
+
+SELECT 
+  id AS product_id,
+  cost,
+  category,
+  brand,
+  retail_price,
+  retail_price - cost AS profit_margin,
+  department,
+FROM ${ref("products")}

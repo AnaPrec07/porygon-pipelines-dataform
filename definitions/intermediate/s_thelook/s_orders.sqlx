@@ -1,0 +1,21 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw orders table",
+  tags: ["staging"]
+}
+
+SELECT 
+order_id,
+user_id,
+status,
+gender,
+created_at,
+returned_at,
+shipped_at,
+delivered_at,
+num_of_item,
+shipped_at-created_at AS order_processing_time,
+delivered_at-shipped_at AS order_transit_time,
+delivered_at-created_at AS order_lead_time,
+FROM ${ref("orders")}

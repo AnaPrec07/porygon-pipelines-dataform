@@ -1,0 +1,15 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw users table",
+  tags: ["staging"]
+}
+
+SELECT 
+  id AS user_id,
+  age,
+  gender,
+  country,
+  traffic_source,
+  created_at,
+FROM ${ref("users")}

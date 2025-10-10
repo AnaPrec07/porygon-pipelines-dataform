@@ -1,0 +1,14 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw inventory_items table",
+  tags: ["staging"]
+}
+
+SELECT 
+id AS inventory_items_id,
+product_id, 
+careated_at,
+sold_at,
+product_distribution_center_id
+FROM ${ref("inventory_items")}

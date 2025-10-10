@@ -1,0 +1,13 @@
+config {
+  type: "table",
+  schema: "s_thelook",
+  description: "Cleaned version of raw order_items table",
+  tags: ["staging"]
+}
+
+SELECT 
+order_id,
+user_id, 
+product_id,
+inventory_item_id, 
+FROM ${ref("order_items")}
