@@ -2,7 +2,7 @@ config {
   type: "operations",
   tags: ["setup"],
   hasOutput: true,
-  schema: "business_config",
+  schema: "config_business",
   name: "customer_segments"
 }
 
