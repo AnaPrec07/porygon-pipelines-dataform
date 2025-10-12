@@ -19,7 +19,8 @@ const uri = `The URI associated with the event`;
 // inventory items constants
 const inventory_items_id = `A unique identifier for an inventory item`;
 const sold_at = `The timestamp when the item was sold.`;
-const product_distribution_center = `The distribution center for the product.`;
+const product_distribution_center_id = `The ID of the distribution center for the product.`;
+
 
 // order constants
 const status = `The status of the order (e.g., 'completed', 'canceled').`;
