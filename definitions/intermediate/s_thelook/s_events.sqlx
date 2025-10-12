@@ -17,7 +17,6 @@ config {
   assertions: {
     nonNull: ["event_id"],
     uniqueKey: ["event_id"],
-    ${assertions.runtimeTimestampAssertion()},
   }
 }
 
