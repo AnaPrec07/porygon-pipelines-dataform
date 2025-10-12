@@ -20,6 +20,7 @@ config {
   assertions: {
     nonNull: ["order_id"],
     uniqueKey: ["order_id"],
+    rowConditions: [assertions.table_successfully_updated]
   }
 }
 

@@ -16,6 +16,7 @@ config {
   assertions: {
     nonNull: ["product_id"],
     uniqueKey: ["product_id"],
+    rowConditions: [assertions.table_successfully_updated]
   }
 }
 

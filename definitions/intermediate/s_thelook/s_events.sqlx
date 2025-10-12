@@ -17,6 +17,7 @@ config {
   assertions: {
     nonNull: ["event_id"],
     uniqueKey: ["event_id"],
+    rowConditions: [assertions.table_successfully_updated]
   }
 }
 

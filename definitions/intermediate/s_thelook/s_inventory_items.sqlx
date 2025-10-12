@@ -14,6 +14,7 @@ config {
   assertions: {
     nonNull: ["inventory_items_id",],
     uniqueKey: ["inventory_items_id"],
+    rowConditions: [assertions.table_successfully_updated]
   }
 }
 

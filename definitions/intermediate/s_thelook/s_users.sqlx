@@ -15,6 +15,7 @@ config {
   assertions: {
     nonNull: ["user_id"],
     uniqueKey: ["user_id"],
+    rowConditions: [assertions.table_successfully_updated]
   }
 }
 
