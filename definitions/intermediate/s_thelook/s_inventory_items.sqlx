@@ -8,7 +8,7 @@ config {
 SELECT 
 id AS inventory_items_id,
 product_id, 
-careated_at,
+created_at,
 sold_at,
 product_distribution_center_id
 FROM ${ref("inventory_items")}
