@@ -2,12 +2,18 @@ config {
   type: "table",
   schema: "s_thelook",
   description: "Cleaned version of raw order_items table",
-  tags: ["staging"]
+  tags: ["staging"],
+  assertions: {
+    nonNull: ["order_id","product_id"],
+    uniqueKey: ["order_id","product_id"],    
+    ${assertions.runtimeTimestampAssertion()},
+  }
 }
 
 SELECT 
 order_id,
 user_id, 
 product_id,
-inventory_item_id, 
+inventory_item_id,
+${date_functions.getRuntimeTimestamp()}
 FROM ${ref("order_items")}

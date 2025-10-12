@@ -4,6 +4,10 @@ config {
   hasOutput: true,
   schema: "config_business",
   name: "customer_segments"
+  assertions: {
+    nonNull: ["segment_name",],
+    uniqueKey: ["segment_name"]
+  }
 }
 
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
@@ -12,7 +16,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   gender STRING,
   age_min INT64,
   age_max INT64,
-  target_max_age INT64,
+  target_max_age INT64
 )
 OPTIONS (
   format = 'GOOGLE_SHEETS',

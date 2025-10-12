@@ -2,7 +2,22 @@ config {
   type: "table",
   schema: "s_thelook",
   description: "Cleaned version of raw products table",
-  tags: ["staging"]
+  columns: {
+    product_id: docs.product_id,
+    cost: : docs.cost,
+    category: docs.category,
+    brand: docs.brand,
+    retail_price: docs.retail_price,
+    markup: docs.markup,
+    department: docs.department,
+    processed_at: docs.processed_at,
+  }
+  tags: ["staging"],
+  assertions: {
+    nonNull: ["product_id"],
+    uniqueKey: ["product_id"],
+    ${assertions.runtimeTimestampAssertion()},
+  }
 }
 
 SELECT 
@@ -11,6 +26,7 @@ SELECT
   category,
   brand,
   retail_price,
-  retail_price - cost AS profit_margin,
+  retail_price - cost AS markup,
   department,
+  ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("products")}
