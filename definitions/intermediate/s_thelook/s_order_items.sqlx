@@ -6,7 +6,7 @@ config {
     order_id: docs.order_id,
     user_id: docs.user_id,
     product_id: docs.product_id,
-    inventory_item_id: docs.inventory_item_id,
+    inventory_items_id: docs.inventory_items_id,
     processed_at: docs.processed_at,
   },
   tags: ["staging"],
@@ -21,6 +21,6 @@ SELECT
 order_id,
 user_id, 
 product_id,
-inventory_item_id,
+inventory_items_id,
 ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("order_items")}
