@@ -10,7 +10,7 @@ config {
     traffic_source: docs.traffic_source,
     created_at: docs.created_at,
     processed_at: docs.processed_at,
-  }
+  },
   tags: ["staging"],
   assertions: {
     nonNull: ["user_id"],

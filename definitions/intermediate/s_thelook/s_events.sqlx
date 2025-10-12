@@ -10,9 +10,9 @@ config {
     created_at: docs.created_at,
     traffic_source: docs.traffic_source,
     uri: docs.uri,
-    event_type: docs.event_type
+    event_type: docs.event_type,
     processed_at: docs.processed_at
-  }
+  },
   tags: ["staging"],
   assertions: {
     nonNull: ["event_id"],

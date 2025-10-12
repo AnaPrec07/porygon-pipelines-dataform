@@ -15,7 +15,7 @@ config {
     order_transit_time: docs.order_transit_time,
     order_lead_time: docs.order_lead_time,
     processed_at: docs.processed_at,
-  }
+  },
   tags: ["staging"],
   assertions: {
     nonNull: ["order_id"],

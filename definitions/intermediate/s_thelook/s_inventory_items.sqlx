@@ -9,7 +9,7 @@ config {
     sold_at: docs.sold_at,
     product_distribution_center_id: docs.product_distribution_center_id,
     processed_at: docs.processed_at
-  }
+  },
   tags: ["staging"],
   assertions: {
     nonNull: ["inventory_items_id",],

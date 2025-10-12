@@ -11,7 +11,7 @@ config {
     markup: docs.markup,
     department: docs.department,
     processed_at: docs.processed_at,
-  }
+  },
   tags: ["staging"],
   assertions: {
     nonNull: ["product_id"],
