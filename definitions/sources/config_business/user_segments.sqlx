@@ -4,6 +4,10 @@ config {
   hasOutput: true,
   schema: "config_business",
   name: "customer_segments"
+  assertions: {
+    nonNull: ["segment_name",],
+    uniqueKey: ["segment_name"]
+  }
 }
 
 CREATE OR REPLACE EXTERNAL TABLE ${self()}

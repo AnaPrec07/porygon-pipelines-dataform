@@ -4,4 +4,8 @@ config {
   schema: "thelook_ecommerce",
   name: "orders",
   description: "raw orders table"
+  assertions: {
+    nonNull: ["order_id",],
+    uniqueKey: ["order_id"]
+  }
 }
