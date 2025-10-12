@@ -2,7 +2,21 @@ config {
   type: "table",
   schema: "s_thelook",
   description: "Cleaned version of raw users table",
-  tags: ["staging"]
+  columns: {
+    user_id: docs.user_id,
+    age: : docs.age,
+    gender: docs.gender,
+    country: docs.country,
+    traffic_source: docs.traffic_source,
+    created_at: docs.created_at,
+    processed_at: docs.processed_at,
+  }
+  tags: ["staging"],
+  assertions: {
+    nonNull: ["user_id"],
+    uniqueKey: ["user_id"],
+    ${assertions.runtimeTimestampAssertion()},
+  }
 }
 
 SELECT 
@@ -12,4 +26,5 @@ SELECT
   country,
   traffic_source,
   created_at,
+  ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("users")}
