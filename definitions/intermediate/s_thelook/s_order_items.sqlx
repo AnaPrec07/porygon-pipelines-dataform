@@ -8,6 +8,7 @@ config {
     product_id: docs.product_id,
     inventory_items_id: docs.inventory_items_id,
     processed_at: docs.processed_at,
+    sale_price: docs.sale_price
   },
   tags: ["staging"],
   assertions: {
@@ -22,5 +23,6 @@ order_id,
 user_id, 
 product_id,
 inventory_items_id,
+sale_price,
 ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("order_items")}

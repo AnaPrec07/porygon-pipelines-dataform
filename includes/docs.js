@@ -45,6 +45,9 @@ const age = `The age of a user.`;
 const gender = `The gender of a user (e.g., 'M', 'F').`;
 const country = `The country of the user (e.g., 'USA', 'CAN').`;
 
+// order_items constants
+const sale_price = `The sale price of the item in USD.`;
+
 module.exports = {
    order_id,
    user_id,
@@ -76,5 +79,6 @@ module.exports = {
    department,
    age,
    gender,
-   country
+   country,
+   sale_price
 };
