@@ -59,7 +59,7 @@ module.exports = {
    uri,
    inventory_items_id,
    sold_at,
-   product_distribution_center,
+   product_distribution_center_id,
    status,
    returned_at,
    shipped_at,
