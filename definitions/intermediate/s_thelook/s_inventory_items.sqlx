@@ -4,7 +4,7 @@ config {
   description: "Cleaned version of raw inventory_items table",
   columns: {
     inventory_items_id: docs.inventory_items_id,
-    product_id: : docs.product_id,
+    product_id: docs.product_id,
     created_at: docs.created_at,
     sold_at: docs.sold_at,
     product_distribution_center_id: docs.product_distribution_center_id,

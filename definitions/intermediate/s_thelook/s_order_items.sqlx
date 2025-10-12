@@ -2,6 +2,13 @@ config {
   type: "table",
   schema: "s_thelook",
   description: "Cleaned version of raw order_items table",
+  columns: {
+    order_id: docs.order_id,
+    user_id: docs.user_id,
+    product_id: docs.product_id,
+    inventory_item_id: docs.inventory_item_id,
+    processed_at: docs.processed_at,
+  }
   tags: ["staging"],
   assertions: {
     nonNull: ["order_id","product_id"],

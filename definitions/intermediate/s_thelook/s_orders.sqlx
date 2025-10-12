@@ -4,7 +4,7 @@ config {
   description: "Cleaned version of raw orders table",
   columns: {
     order_id: docs.order_id,
-    user_id: : docs.user_id,
+    user_id: docs.user_id,
     status: docs.status,
     created_at: docs.created_at,
     returned_at: docs.returned_at,

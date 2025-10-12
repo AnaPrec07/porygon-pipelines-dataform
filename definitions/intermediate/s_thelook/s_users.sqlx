@@ -4,7 +4,7 @@ config {
   description: "Cleaned version of raw users table",
   columns: {
     user_id: docs.user_id,
-    age: : docs.age,
+    age: docs.age,
     gender: docs.gender,
     country: docs.country,
     traffic_source: docs.traffic_source,

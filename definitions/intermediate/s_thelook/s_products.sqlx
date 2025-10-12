@@ -4,7 +4,7 @@ config {
   description: "Cleaned version of raw products table",
   columns: {
     product_id: docs.product_id,
-    cost: : docs.cost,
+    cost: docs.cost,
     category: docs.category,
     brand: docs.brand,
     retail_price: docs.retail_price,
