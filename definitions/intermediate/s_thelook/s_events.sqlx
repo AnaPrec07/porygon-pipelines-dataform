@@ -6,13 +6,13 @@ config {
 }
 
 select
-  event_id,
+  id as event_id,
   user_id,
-  product_id,
   sequence_number,
+  session_id,
+  created_at, 
+  traffic_source,
+  uri,
   event_type,
-  created_at,
-  traffice_source,
-  user_agent,
 from
   ${ref("events")}
