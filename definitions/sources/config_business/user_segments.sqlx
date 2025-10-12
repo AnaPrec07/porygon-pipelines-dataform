@@ -16,7 +16,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   gender STRING,
   age_min INT64,
   age_max INT64,
-  target_max_age INT64,
+  target_max_age INT64
 )
 OPTIONS (
   format = 'GOOGLE_SHEETS',
