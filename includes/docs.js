@@ -1,5 +1,5 @@
 
-// filename is includes/docs.js
+// includes/docs.js
 
 // global constants
 const order_id = `A unique identifier for an order.`;
