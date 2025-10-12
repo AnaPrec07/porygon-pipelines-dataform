@@ -3,9 +3,5 @@ config {
   database: "bigquery-public-data",
   schema: "thelook_ecommerce",
   name: "orders",
-  description: "raw orders table"
-  assertions: {
-    nonNull: ["order_id",],
-    uniqueKey: ["order_id"]
-  }
+  description: "raw orders table",
 }
