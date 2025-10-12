@@ -12,8 +12,8 @@ config {
   },
   tags: ["staging"],
   assertions: {
-    nonNull: ["order_id","product_id"],
-    uniqueKey: ["order_id","product_id"],
+    nonNull: ["order_id","product_id", "inventory_item_id"],
+    uniqueKey: ["order_id","product_id", "inventory_item_id"],
     rowConditions: [assertions.table_successfully_updated]
   }
 }
