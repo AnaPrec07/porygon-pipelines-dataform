@@ -27,7 +27,7 @@ const status = `The status of the order (e.g., 'completed', 'canceled').`;
 const returned_at = `The timestamp when the order was returned.`;
 const shipped_at = `The timestamp when the order was shipped.`;
 const delivered_at = `The timestamp when the order was delivered.`;
-const num_of_items = `The number of items in the order.`;
+const num_of_item = `The number of items in the order.`;
 const order_processing_time = `The time taken to process the order in hours. Calculated as shipped_at minus created_at.`;
 const order_transit_time = `The time taken for the order to be delivered in hours. Calculated as delivered_at minus shipped_at.`;
 const order_lead_time = `The total time from order creation to delivery in hours. Calculated as delivered_at minus created_at.`;
@@ -67,7 +67,7 @@ module.exports = {
    returned_at,
    shipped_at,
    delivered_at,
-   num_of_items,
+   num_of_item,
    order_processing_time,
    order_transit_time,
    order_lead_time,
