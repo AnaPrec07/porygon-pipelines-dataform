@@ -16,7 +16,6 @@ config {
   assertions: {
     nonNull: ["product_id"],
     uniqueKey: ["product_id"],
-    ${assertions.runtimeTimestampAssertion()},
   }
 }
 

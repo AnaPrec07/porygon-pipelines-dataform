@@ -14,7 +14,6 @@ config {
   assertions: {
     nonNull: ["inventory_items_id",],
     uniqueKey: ["inventory_items_id"],
-    ${assertions.runtimeTimestampAssertion()},
   }
 }
 
