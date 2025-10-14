@@ -1,5 +1,5 @@
 config {
-  type: "table",
+  type: "view",
   schema: "looker_studio_views",
   description: "Reporting View for profit across time",
   tags: ["reporting"],
