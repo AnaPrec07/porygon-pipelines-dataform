@@ -2,4 +2,3 @@ defaultProject: porygon-pipelines
 defaultDataset: dataform
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.26
-defaultLocation: "us-east4"
