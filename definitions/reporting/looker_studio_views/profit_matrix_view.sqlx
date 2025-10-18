@@ -18,7 +18,7 @@ WITH year_to_date AS (
   SELECT 
     product_category,
     SUM(gross_profit) AS profit_ytd
-    FROM `porygon-pipelines.looker_studio_views.profit_view`
+    FROM ${ref("profit_view")}
     WHERE EXTRACT(YEAR from date) = EXTRACT(YEAR FROM CURRENT_DATE)
     GROUP BY 
     product_category
@@ -27,7 +27,7 @@ last_year_to_date AS (
   SELECT 
     product_category,
     SUM(gross_profit) AS profit_last_ytd
-    FROM `porygon-pipelines.looker_studio_views.profit_view`
+    FROM ${ref("profit_view")}
     WHERE EXTRACT(YEAR from date) = (EXTRACT(YEAR FROM CURRENT_DATE)-1)
     GROUP BY 
     product_category
