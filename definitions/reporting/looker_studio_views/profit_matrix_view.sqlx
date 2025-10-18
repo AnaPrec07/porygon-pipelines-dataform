@@ -4,7 +4,7 @@ config {
   description: "View that reports profit matrix per category",
   columns: {
     category: docs.category,
-    profit_ytd: docs.profit_ytd
+    profit_ytd: docs.profit_ytd,
     profit_last_ytd: docs.profit_last_ytd
   },
   tags: ["reporting"],

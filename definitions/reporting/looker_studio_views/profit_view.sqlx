@@ -26,7 +26,7 @@ WITH main_query AS (
     trx.user_country,
     trx.iso_abbreviation,
     trx.brand,
-    trx.category
+    trx.category,
     SUM(trx.sale_price) AS revenue,
     SUM(trx.product_cost) AS cogs,
     SUM(trx.gross_profit) AS gross_profit,
