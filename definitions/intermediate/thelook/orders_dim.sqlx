@@ -31,8 +31,8 @@ SELECT
   shipped_at AS date_shipped,
   delivered_at AS date_delivered,
   num_of_item,
-  date_shipped-date_created AS order_processing_time,
-  date_delivered-date_shipped AS order_transit_time,
-  date_delivered-date_created AS order_lead_time,
+  shipped_at-created_at AS order_processing_time,
+  delivered_at-shipped_at AS order_transit_time,
+  delivered_at-created_at AS order_lead_time,
   ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("orders")}
