@@ -44,7 +44,7 @@ const department = `The department of the product (e.g., 'Clothing', 'Footwear')
 // user constants
 const age = `The age of a user.`;
 const gender = `The gender of a user (e.g., 'M', 'F').`;
-const user_country = `The country of the user (e.g., 'USA', 'CAN').`;
+const country = `The country of the user (e.g., 'USA', 'CAN').`;
 const user_segment = `The segment of the user as per defined in config table.`;
 const user_market = `The market of the user as per defined in config table.`;
 const iso_abbreviation = `The ISO abbreviation for the user's country.`;
@@ -93,7 +93,7 @@ module.exports = {
    department,
    age,
    gender,
-   user_country,
+   country,
    user_segment,
    user_market,
    iso_abbreviation,
