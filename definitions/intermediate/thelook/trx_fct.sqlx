@@ -25,7 +25,6 @@ config {
 }
 
 SELECT 
-SELECT 
 order_items.order_id, 
 order_items.user_id, 
 order_items.product_id,
