@@ -1,0 +1,18 @@
+config {
+  type: "operations",
+  tags: ["setup"],
+  hasOutput: true,
+  schema: "config_business",
+  name: "country_lookup"
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()}
+(
+  iso_abbreviation STRING,
+  country_name STRING,
+)
+OPTIONS (
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/config_business/country_lkp.csv'],
+  skip_leading_rows = 1
+);

@@ -1,0 +1,16 @@
+Table profit_matrix_view {
+    product_category STRING [pk]
+    profit_ytd FLOAT
+    profit_last_ytd FLOAT
+    growth FLOAT
+}
+Table profit_view {
+    date INTEGER [pk]
+    user_country STRING [pk]
+    product_brand STRING [pk]
+    product_category STRING [pk]
+    revenue NUMERIC
+    cogs NUMERIC
+    gross_profit NUMERIC
+    iso_abbreviation STRING
+}

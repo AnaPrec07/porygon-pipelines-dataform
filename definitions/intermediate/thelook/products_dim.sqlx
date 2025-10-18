@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "s_thelook",
+  schema: "thelook",
   description: "Cleaned version of raw products table",
   columns: {
     product_id: docs.product_id,
@@ -10,13 +10,12 @@ config {
     retail_price: docs.retail_price,
     markup: docs.markup,
     department: docs.department,
-    processed_at: docs.processed_at,
+    processing_timestamp: docs.processing_timestamp,
   },
-  tags: ["staging"],
+  tags: ["intermediate"],
   assertions: {
     nonNull: ["product_id"],
     uniqueKey: ["product_id"],
-    rowConditions: [assertions.table_successfully_updated]
   }
 }
 

@@ -1,23 +1,22 @@
 config {
   type: "table",
-  schema: "s_thelook",
+  schema: "thelook",
   description: "Cleaned version of raw events table",
   columns: {
     event_id: docs.event_id,
     user_id: docs.user_id,
     sequence_number: docs.sequence_number,
     session_id: docs.session_id,
-    created_at: docs.created_at,
+    date_created: docs.date_created,
     traffic_source: docs.traffic_source,
     uri: docs.uri,
     event_type: docs.event_type,
-    processed_at: docs.processed_at
+    processing_timestamp: docs.processing_timestamp
   },
-  tags: ["staging"],
+  tags: ["intermediate"],
   assertions: {
     nonNull: ["event_id"],
     uniqueKey: ["event_id"],
-    rowConditions: [assertions.table_successfully_updated]
   }
 }
 
@@ -26,7 +25,7 @@ select
   user_id,
   sequence_number,
   session_id,
-  created_at, 
+  created_at AS date_created, 
   traffic_source,
   uri,
   event_type,

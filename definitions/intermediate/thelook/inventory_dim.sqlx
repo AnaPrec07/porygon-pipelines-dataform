@@ -1,0 +1,23 @@
+config {
+  type: "table",
+  schema: "thelook",
+  description: "Cleaned version of raw inventory_items table",
+  columns: {
+    inventory_items_id: docs.inventory_items_id,
+    date_created: docs.date_created,
+    date_sold: docs.sold_at,
+    processing_timestamp: docs.processing_timestamp
+  },
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: ["inventory_items_id",],
+    uniqueKey: ["inventory_items_id"],
+  }
+}
+
+SELECT 
+  id AS inventory_items_id,
+  created_at AS date_created, 
+  sold_at AS date_sold,
+  ${date_functions.getRuntimeTimestamp()}
+FROM ${ref("inventory_items")}

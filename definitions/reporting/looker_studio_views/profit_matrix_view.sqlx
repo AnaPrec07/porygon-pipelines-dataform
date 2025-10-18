@@ -1,0 +1,45 @@
+config {
+  type: "view",
+  schema: "looker_studio_views",
+  description: "View that reports profit matrix per product_category",
+  columns: {
+    product_category: docs.category,
+    profit_ytd: docs.profit_ytd,
+    profit_last_ytd: docs.profit_last_ytd,
+    growth: docs.growth
+  },
+  tags: ["reporting"],
+  assertions: {
+    nonNull: ["product_category"],
+    uniqueKey: ["product_category"],
+  }
+}
+
+WITH year_to_date AS (
+  SELECT 
+    product_category,
+    SUM(gross_profit) AS profit_ytd
+    FROM ${ref("profit_view")}
+    WHERE EXTRACT(YEAR from date) = EXTRACT(YEAR FROM CURRENT_DATE)
+    GROUP BY 
+    product_category
+),
+last_year_to_date AS (
+  SELECT 
+    product_category,
+    SUM(gross_profit) AS profit_last_ytd
+    FROM ${ref("profit_view")}
+    WHERE EXTRACT(YEAR from date) = (EXTRACT(YEAR FROM CURRENT_DATE)-1)
+    GROUP BY 
+    product_category
+)
+SELECT 
+  ytd.product_category,
+  ytd.profit_ytd,
+  last_ytd.profit_last_ytd,
+  (ytd.profit_ytd-last_ytd.profit_last_ytd)/last_ytd.profit_last_ytd AS growth
+  FROM year_to_date ytd
+  LEFT JOIN last_year_to_date last_ytd
+  ON ytd.product_category = last_ytd.product_category
+
+

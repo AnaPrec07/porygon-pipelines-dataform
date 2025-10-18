@@ -1,0 +1,38 @@
+config {
+  type: "view",
+  schema: "looker_studio_views",
+  description: "View that reports profit KPIs",
+  columns: {
+    date: docs.date_created,
+    user_country: docs.country,
+    iso_abbreviation: docs.iso_abbreviation,
+    product_brand: docs.brand,
+    product_category: docs.category,
+    revenue: docs.revenue,
+    cogs: docs.cogs,
+    gross_profit: docs.gross_profit
+  },
+  tags: ["reporting"],
+  assertions: {
+    nonNull: ["date","user_country", "product_category"],
+    uniqueKey: ["date","user_country","product_brand", "product_category"],
+  }
+}
+
+SELECT 
+  trx.date,
+  trx.user_country,
+  trx.iso_abbreviation,
+  trx.product_brand,
+  trx.product_category,
+  SUM(trx.sale_price) AS revenue,
+  SUM(trx.product_cost) AS cogs,
+  SUM(trx.gross_profit) AS gross_profit,
+FROM ${ref("trx_fct")} trx
+WHERE order_status = "Complete"
+GROUP BY 
+  trx.date,
+  trx.user_country,
+  trx.product_brand,
+  trx.product_category,
+  trx.iso_abbreviation
