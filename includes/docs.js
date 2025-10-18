@@ -8,7 +8,7 @@ const product_id = `A unique identifier for a product.`;
 const traffic_source = `The source of the traffic (e.g., 'Organic', 'Email').`;
 const date_created = `The timestamp when the row values were created.`;
 const processing_timestamp = `The timestamp when the row was processed.`;
-const date = `The date of the record.`
+const date = `The date of the record.`;
 
 // event constants
 const event_id = `A unique identifier for an event.`;
