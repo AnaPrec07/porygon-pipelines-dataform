@@ -59,7 +59,7 @@ const gross_profit = `The gross profit calculated as revenue minus cost of goods
 
 // profit_matrix_view constants
 const profit_ytd = `The year-to-date profit in USD.`;
-const profit_last_ytd = `The profit for the curreent year-to-date period last year in USD.`;
+const profit_last_ytd = `The profit for the current year-to-date period last year in USD.`;
 
 module.exports = {
    order_id,
