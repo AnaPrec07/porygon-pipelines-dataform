@@ -1,164 +1,807 @@
----
-layout: default
-title: Home
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Porygon Pipelines - Modern Data Engineering with Google Dataform">
+  <title>Porygon Pipelines | Data Engineering Portfolio</title>
 
-<div class="hero-section">
-  <div class="hero-content">
-    <h1 class="hero-title">Porygon Pipelines</h1>
-    <p class="hero-subtitle">Modern E-commerce Data Pipeline with Google Dataform</p>
-    <p class="hero-description">
-      A comprehensive data transformation pipeline that processes e-commerce data from The Look dataset, 
-      creating clean, analyzable data marts for business intelligence and analytics.
-    </p>
-    <div class="hero-buttons">
-      <a href="{{ '/architecture' | relative_url }}" class="btn btn-primary">View Architecture</a>
-      <a href="https://github.com/{{ site.github_username }}/{{ site.repository }}" class="btn btn-secondary" target="_blank">
-        <i class="fab fa-github"></i> View on GitHub
-      </a>
-    </div>
-  </div>
-</div>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome for Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-<section class="features-section">
-  <div class="container">
-    <h2>Project Highlights</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-database"></i>
-        </div>
-        <h3>Data Transformation</h3>
-        <p>Clean, standardized data transformations using Dataform's powerful SQL-based approach</p>
+  <style>
+    /* === Reset & Base === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: #1e293b;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    /* === Hero Section === */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      color: #fff;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+      opacity: 0.3;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa 0%, #34d399 50%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.4rem;
+      color: #cbd5e1;
+      margin-bottom: 0.8rem;
+      font-weight: 500;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: #fff;
+      padding: 1rem 2.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 1rem 2.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    /* === Navigation === */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+      padding: 1rem 0;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a:hover {
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+    }
+
+    /* === Sections === */
+    .section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: #64748b;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 4rem;
+      line-height: 1.7;
+    }
+
+    /* === Cards Grid === */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1rem;
+    }
+
+    .card-description {
+      color: #64748b;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    /* === Architecture Cards === */
+    .architecture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .architecture-card {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #fff;
+      border-radius: 1rem;
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .architecture-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+    }
+
+    .architecture-card:hover::before {
+      animation: shine 0.8s ease;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .architecture-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .layer-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1e293b;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* === Tech Stack === */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .tech-item {
+      background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tech-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+    }
+
+    .tech-item:hover {
+      transform: translateY(-5px);
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .tech-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #60a5fa;
+    }
+
+    .tech-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* === Stats Section === */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+      border-radius: 1rem;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.9rem;
+    }
+
+    /* === Footer === */
+    .footer {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #cbd5e1;
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      margin-top: 6rem;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #94a3b8;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-links a:hover {
+      color: #60a5fa;
+      transform: translateY(-2px);
+    }
+
+    /* === Responsive Design === */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 3rem;
+      }
+      
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .nav-links {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .section {
+        padding: 4rem 1rem;
+      }
+      
+      .section-title {
+        font-size: 2.5rem;
+      }
+      
+      .cards-grid,
+      .architecture-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tech-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 6rem 1rem 4rem;
+      }
+      
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 4rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; letter-spacing: -0.025em; line-height: 1.1;">
+          Porygon Pipelines
+        </h1>
+        <div style="width: 120px; height: 4px; background: linear-gradient(90deg, #3b82f6, #06b6d4); margin: 0 auto; border-radius: 2px;"></div>
       </div>
       
-      <div class="feature-card">
-        <div class="feature-icon">
+      <div class="hero-subtitle" style="font-size: 1.4rem; color: #e2e8f0; margin-bottom: 1.5rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em;">
+        Modern Data Engineering
+      </div>
+      
+      <p class="hero-description" style="font-size: 1.1rem; color: #cbd5e1; max-width: 700px; margin: 0 auto 3rem; line-height: 1.7; font-weight: 400;">
+        Enterprise-grade data pipeline development using Google Dataform and BigQuery. 
+        Demonstrating best practices in data architecture, transformation design, and 
+        scalable analytics infrastructure for modern business intelligence.
+      </p>
+      
+      <div class="hero-buttons">
+        <a href="#project" class="btn-primary" style="background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%); box-shadow: 0 8px 25px rgba(30, 64, 175, 0.3); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.95rem;">
           <i class="fas fa-chart-line"></i>
-        </div>
-        <h3>Analytics Ready</h3>
-        <p>Purpose-built data marts optimized for business intelligence and reporting tools</p>
+          View Project Details
+        </a>
+        <a href="https://github.com/AnaPrec07/porygon-pipelines-dataform" target="_blank" class="btn-secondary" style="text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.95rem;">
+          <i class="fab fa-github"></i>
+          Source Code
+        </a>
       </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
+    </div>
+  </section>
+
+
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-links">
+        <a href="#project">
+          <i class="fas fa-chart-line"></i>
+          Overview
+        </a>
+        <a href="#architecture">
+          <i class="fas fa-sitemap"></i>
+          Architecture
+        </a>
+        <a href="#features">
+          <i class="fas fa-star"></i>
+          Features
+        </a>
+        <a href="#tech-stack">
           <i class="fas fa-cogs"></i>
-        </div>
-        <h3>Automated Pipeline</h3>
-        <p>Fully automated data pipeline with proper error handling and data quality checks</p>
-      </div>
-      
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-eye"></i>
-        </div>
-        <h3>Looker Studio Integration</h3>
-        <p>Pre-built views optimized for Looker Studio dashboards and visualizations</p>
+          Tech Stack
+        </a>
+        <a href="#stats">
+          <i class="fas fa-chart-bar"></i>
+          Stats
+        </a>
       </div>
     </div>
-  </div>
-</section>
+  </nav>
 
-<section class="pipeline-overview">
-  <div class="container">
-    <h2>Pipeline Architecture</h2>
-    <div class="pipeline-flow">
-      <div class="pipeline-stage">
-        <div class="stage-box source">
-          <h4>Sources</h4>
-          <ul>
-            <li>Events</li>
-            <li>Orders</li>
-            <li>Products</li>
-            <li>Users</li>
-            <li>Inventory Items</li>
-          </ul>
-        </div>
-        <div class="arrow">→</div>
-      </div>
-      
-      <div class="pipeline-stage">
-        <div class="stage-box intermediate">
-          <h4>Intermediate Tables</h4>
-          <ul>
-            <li>Events Fact</li>
-            <li>Orders Dimension</li>
-            <li>Products Dimension</li>
-            <li>Users Dimension</li>
-            <li>Transaction Fact</li>
-          </ul>
-        </div>
-        <div class="arrow">→</div>
-      </div>
-      
-      <div class="pipeline-stage">
-        <div class="stage-box reporting">
-          <h4>Reporting Layer</h4>
-          <ul>
-            <li>Profit Views</li>
-            <li>Matrix Views</li>
-            <li>Looker Studio Ready</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="tech-stack">
-  <div class="container">
-    <h2>Technology Stack</h2>
-    <div class="tech-grid">
-      <div class="tech-item">
-        <img src="https://cloud.google.com/images/social-icon-google-cloud-1200-630.png" alt="Google Cloud" class="tech-logo">
-        <span>Google Cloud Platform</span>
-      </div>
-      <div class="tech-item">
-        <img src="https://avatars.githubusercontent.com/u/42965462?s=200&v=4" alt="Dataform" class="tech-logo">
-        <span>Dataform</span>
-      </div>
-      <div class="tech-item">
-        <img src="https://cloud.google.com/images/products/bigquery/bigquery-logo.svg" alt="BigQuery" class="tech-logo">
-        <span>BigQuery</span>
-      </div>
-      <div class="tech-item">
-        <img src="https://logos-world.net/wp-content/uploads/2021/10/Looker-Symbol.png" alt="Looker Studio" class="tech-logo">
-        <span>Looker Studio</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="contact-section">
-  <div class="container">
-    <h2>About This Project</h2>
-    <p>
-      This project demonstrates modern data engineering practices using Google Dataform to build 
-      a scalable, maintainable data pipeline. The pipeline processes e-commerce data from Google's 
-      public "The Look" dataset, transforming raw data into business-ready analytics tables.
+  <!-- Project Overview Section -->
+  <section id="project" class="section">
+    <h2 class="section-title">Project Overview</h2>
+    <p class="section-subtitle">
+      Porygon Pipelines demonstrates enterprise-grade data engineering practices using Google Dataform 
+      to build scalable, maintainable data pipelines that transform raw e-commerce data into business-ready insights.
     </p>
-    <p>
-      <strong>Key Features:</strong> Dimensional modeling, automated testing, documentation generation, 
-      and integration with business intelligence tools.
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🏗️</div>
+        <h3 class="card-title">Modern Data Stack</h3>
+        <p class="card-description">
+          Cloud-native architecture leveraging Google Cloud Platform with a SQL-first approach for maintainable, 
+          version-controlled transformations that scale with your business needs.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3 class="card-title">Dimensional Modeling</h3>
+        <p class="card-description">
+          Properly designed fact and dimension tables following star schema patterns for optimal analytics 
+          performance and intuitive business user experience.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3 class="card-title">Automated Pipelines</h3>
+        <p class="card-description">
+          Fully automated data pipelines with Git integration, automated testing, documentation generation, 
+          and comprehensive data lineage tracking.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h3 class="card-title">Data Quality Assurance</h3>
+        <p class="card-description">
+          Built-in data validation, testing frameworks, and monitoring ensuring reliable, trusted data 
+          for critical business decisions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Section -->
+  <section id="architecture" class="section">
+    <h2 class="section-title">Pipeline Architecture</h2>
+    <p class="section-subtitle">
+      Implementation of the medallion architecture pattern with clear separation of concerns, 
+      enabling scalable data processing from raw sources to business-ready analytics.
     </p>
     
-    <div class="project-stats">
-      <div class="stat">
-        <span class="stat-number">6</span>
-        <span class="stat-label">Source Tables</span>
+    <div class="architecture-grid">
+      <div class="architecture-card">
+        <div class="layer-badge">🥉 Bronze Layer</div>
+        <h3 class="card-title">Source Layer</h3>
+        <p class="card-description">
+          Raw data ingestion from The Look e-commerce dataset including customer events, orders, 
+          products, users, and inventory data. Configuration sources provide essential lookup tables 
+          and business rules for downstream processing.
+        </p>
+        <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #94a3b8;">
+          <strong>Key Sources:</strong> events, orders, products, users, inventory_items, country_lookup, user_segments
+        </div>
       </div>
-      <div class="stat">
-        <span class="stat-number">5</span>
-        <span class="stat-label">Dimension Tables</span>
+      
+      <div class="architecture-card">
+        <div class="layer-badge">🥈 Silver Layer</div>
+        <h3 class="card-title">Intermediate Layer</h3>
+        <p class="card-description">
+          Business logic application creating clean, standardized datasets with proper dimensional modeling. 
+          Includes fact tables for transactions and events, plus dimension tables for master data entities.
+        </p>
+        <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #94a3b8;">
+          <strong>Outputs:</strong> users_dim, products_dim, orders_dim, inventory_dim, events_fct, trx_fct
+        </div>
       </div>
-      <div class="stat">
-        <span class="stat-number">2</span>
-        <span class="stat-label">Fact Tables</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">2</span>
-        <span class="stat-label">Reporting Views</span>
+      
+      <div class="architecture-card">
+        <div class="layer-badge">🥇 Gold Layer</div>
+        <h3 class="card-title">Reporting Layer</h3>
+        <p class="card-description">
+          Purpose-built views optimized for business intelligence tools and self-service analytics. 
+          Includes pre-aggregated metrics, KPIs, and dashboard-ready datasets for Looker Studio integration.
+        </p>
+        <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #94a3b8;">
+          <strong>Views:</strong> profit_view, profit_matrix_view, customer_analytics, product_performance
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section">
+    <h2 class="section-title">Key Features & Capabilities</h2>
+    <p class="section-subtitle">
+      Enterprise-grade features ensuring data reliability, performance, and business value 
+      throughout the entire data lifecycle.
+    </p>
+    
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3 class="card-title">Complete Data Lineage</h3>
+        <p class="card-description">
+          Full traceability from source to report with automated documentation of data transformations, 
+          dependencies, and impact analysis for change management.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3 class="card-title">Performance Optimization</h3>
+        <p class="card-description">
+          Incremental processing, intelligent partitioning strategies, and BigQuery-optimized queries 
+          ensuring cost-effective, high-performance data processing.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3 class="card-title">Data Validation Framework</h3>
+        <p class="card-description">
+          Comprehensive testing with primary key uniqueness checks, referential integrity validation, 
+          data freshness monitoring, and automated quality reporting.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <h3 class="card-title">Business Intelligence Ready</h3>
+        <p class="card-description">
+          Pre-built analytics views, KPI dashboards, and self-service data marts enabling business users 
+          to make data-driven decisions without technical barriers.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">🔧</div>
+        <h3 class="card-title">DevOps Integration</h3>
+        <p class="card-description">
+          Git-based version control, automated deployment workflows, environment management, 
+          and CI/CD integration for production-ready data operations.
+        </p>
+      </div>
+      
+      <div class="card">
+        <div class="card-icon">💰</div>
+        <h3 class="card-title">Cost Optimization</h3>
+        <p class="card-description">
+          Serverless BigQuery processing, intelligent query optimization, and resource-efficient 
+          transformations minimizing cloud computing costs while maximizing performance.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section id="tech-stack" class="section">
+    <h2 class="section-title">Technology Stack</h2>
+    <p class="section-subtitle">
+      Modern, cloud-native technologies chosen for scalability, maintainability, and industry best practices.
+    </p>
+    
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">☁️</div>
+        <div class="tech-name">Google Cloud Platform</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🗄️</div>
+        <div class="tech-name">BigQuery</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔄</div>
+        <div class="tech-name">Dataform</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">💾</div>
+        <div class="tech-name">SQL</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <div class="tech-name">JavaScript</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔧</div>
+        <div class="tech-name">Git</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📊</div>
+        <div class="tech-name">Looker Studio</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📋</div>
+        <div class="tech-name">DBML</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section id="stats" class="section">
+    <h2 class="section-title">Project Statistics</h2>
+    <p class="section-subtitle">
+      Key metrics demonstrating the scale and complexity of the data engineering implementation.
+    </p>
+    
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number">15+</span>
+        <div class="stat-label">Data Models</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">3</span>
+        <div class="stat-label">Pipeline Layers</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">8</span>
+        <div class="stat-label">Source Tables</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <div class="stat-label">Test Coverage</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="https://github.com/AnaPrec07/porygon-pipelines-dataform" target="_blank">
+          <i class="fab fa-github"></i>
+          GitHub Repository
+        </a>
+        <a href="architecture.html">
+          <i class="fas fa-book"></i>
+          Technical Documentation
+        </a>
+        <a href="about.html">
+          <i class="fas fa-info-circle"></i>
+          Project Details
+        </a>
+        <a href="documentation.html">
+          <i class="fas fa-file-alt"></i>
+          Setup Guide
+        </a>
+      </div>
+      <p>&copy; 2025 Porygon Pipelines. Showcasing modern data engineering excellence with Google Dataform.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #64748b;">
+        Built with ❤️ for the data engineering community
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
