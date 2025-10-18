@@ -25,20 +25,21 @@ config {
 }
 
 SELECT 
+SELECT 
 order_items.order_id, 
 order_items.user_id, 
 order_items.product_id,
 orders.status AS order_status,
 inventory_item_id,
 DATE(orders.date_created) AS date,
-product.brand AS product_brand,
-product.category AS produt_category,
-user.age AS user_age,
-user.gender AS user_gender,
-user.country AS user_country,
-user.iso_abbreviation,
+products.brand AS product_brand,
+products.category AS produt_category,
+users.age AS user_age,
+users.gender AS user_gender,
+users.country AS user_country,
+users.iso_abbreviation,
 order_items.sale_price,
-product.cost AS product_cost,
+products.cost AS product_cost,
 order_items.sale_price - products.cost AS gross_profit,
 ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("order_items")} order_items
@@ -47,4 +48,4 @@ ON order_items.product_id = products.product_id
 JOIN ${ref("orders_dim")} orders
 ON order_items.order_id = orders.order_id
 JOIN ${ref("users_dim")} users
-ON users.order_id = orders.order_id
+ON order_items.user_id = users.user_id
