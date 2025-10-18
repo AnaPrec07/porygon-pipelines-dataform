@@ -1,7 +1,7 @@
 config {
   type: "view",
   schema: "looker_studio_views",
-  description: "View that reports pofit KPIs",
+  description: "View that reports profit KPIs",
   columns: {
     date: docs.date_created,
     user_country: docs.country,
