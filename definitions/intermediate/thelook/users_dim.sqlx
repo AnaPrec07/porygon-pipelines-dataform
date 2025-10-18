@@ -22,10 +22,10 @@ config {
 SELECT 
   users.id AS user_id,
   users.age,
-  usrs.gender,
+  users.gender,
   users.country,
   users.traffic_source,
-  usrs.date_created,
+  users.date_created,
   country_lkp.iso_abbreviation,
   ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("users")} users
