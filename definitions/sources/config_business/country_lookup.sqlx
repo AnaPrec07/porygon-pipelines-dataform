@@ -12,7 +12,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   country_name STRING,
 )
 OPTIONS (
-  format = 'GOOGLE_SHEETS',
-  uris = ['https://docs.google.com/spreadsheets/d/1gq-KAr4e03Y2IxFZN_knQWQvCn0pW_mU9mYV-Lkr8cg/edit?usp=drive_web&ouid=103844197302772851363'],
+  format = 'CSV',
+  uris = ['https://storage.googleapis.com/config_business/country_lkp.csv'],
   skip_leading_rows = 1
 );
