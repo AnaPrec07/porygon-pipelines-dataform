@@ -6,16 +6,16 @@ config {
     date: docs.date_created,
     user_country: docs.country,
     iso_abbreviation: docs.iso_abbreviation,
-    brand: docs.brand,
-    category: docs.category,
+    product_brand: docs.brand,
+    product_category: docs.category,
     revenue: docs.revenue,
     cogs: docs.cogs,
     gross_profit: docs.gross_profit
   },
   tags: ["reporting"],
   assertions: {
-    nonNull: ["date","user_country", "brand", "category"],
-    uniqueKey: ["date","user_country", "brand", "category"],
+    nonNull: ["date","user_country", "product_brand", "product_category"],
+    uniqueKey: ["date","user_country", "product_brand", "product_category"],
   }
 }
 
@@ -33,5 +33,6 @@ WHERE order_status = "Complete"
 GROUP BY 
   trx.date,
   trx.user_country,
-  trx.brand,
-  trx.category
+  trx.product_brand,
+  trx.product_category,
+  trx.iso_abbreviation
