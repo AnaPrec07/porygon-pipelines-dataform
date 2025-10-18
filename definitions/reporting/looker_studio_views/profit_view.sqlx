@@ -34,4 +34,4 @@ GROUP BY
   trx.date,
   trx.user_country,
   trx.brand,
-  trx.category,
+  trx.category
