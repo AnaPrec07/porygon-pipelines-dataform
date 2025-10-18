@@ -97,5 +97,11 @@ module.exports = {
    user_segment,
    user_market,
    iso_abbreviation,
-   sale_price
+   sale_price,
+   revenue,
+   cogs,
+   gross_profit,
+   profit_ytd,
+   profit_last_ytd
+
 };
