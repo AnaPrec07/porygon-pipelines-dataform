@@ -14,8 +14,8 @@ config {
   },
   tags: ["reporting"],
   assertions: {
-    nonNull: ["date","user_country", "brand", "category],
-    uniqueKey: ["date","user_country", "brand", "category],
+    nonNull: ["date","user_country", "brand", "category"],
+    uniqueKey: ["date","user_country", "brand", "category"],
   }
 }
 
