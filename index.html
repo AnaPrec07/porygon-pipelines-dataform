@@ -1,0 +1,164 @@
+---
+layout: default
+title: Home
+---
+
+<div class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">Porygon Pipelines</h1>
+    <p class="hero-subtitle">Modern E-commerce Data Pipeline with Google Dataform</p>
+    <p class="hero-description">
+      A comprehensive data transformation pipeline that processes e-commerce data from The Look dataset, 
+      creating clean, analyzable data marts for business intelligence and analytics.
+    </p>
+    <div class="hero-buttons">
+      <a href="{{ '/architecture' | relative_url }}" class="btn btn-primary">View Architecture</a>
+      <a href="https://github.com/{{ site.github_username }}/{{ site.repository }}" class="btn btn-secondary" target="_blank">
+        <i class="fab fa-github"></i> View on GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+<section class="features-section">
+  <div class="container">
+    <h2>Project Highlights</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <h3>Data Transformation</h3>
+        <p>Clean, standardized data transformations using Dataform's powerful SQL-based approach</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3>Analytics Ready</h3>
+        <p>Purpose-built data marts optimized for business intelligence and reporting tools</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+        <h3>Automated Pipeline</h3>
+        <p>Fully automated data pipeline with proper error handling and data quality checks</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h3>Looker Studio Integration</h3>
+        <p>Pre-built views optimized for Looker Studio dashboards and visualizations</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pipeline-overview">
+  <div class="container">
+    <h2>Pipeline Architecture</h2>
+    <div class="pipeline-flow">
+      <div class="pipeline-stage">
+        <div class="stage-box source">
+          <h4>Sources</h4>
+          <ul>
+            <li>Events</li>
+            <li>Orders</li>
+            <li>Products</li>
+            <li>Users</li>
+            <li>Inventory Items</li>
+          </ul>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+      
+      <div class="pipeline-stage">
+        <div class="stage-box intermediate">
+          <h4>Intermediate Tables</h4>
+          <ul>
+            <li>Events Fact</li>
+            <li>Orders Dimension</li>
+            <li>Products Dimension</li>
+            <li>Users Dimension</li>
+            <li>Transaction Fact</li>
+          </ul>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+      
+      <div class="pipeline-stage">
+        <div class="stage-box reporting">
+          <h4>Reporting Layer</h4>
+          <ul>
+            <li>Profit Views</li>
+            <li>Matrix Views</li>
+            <li>Looker Studio Ready</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tech-stack">
+  <div class="container">
+    <h2>Technology Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <img src="https://cloud.google.com/images/social-icon-google-cloud-1200-630.png" alt="Google Cloud" class="tech-logo">
+        <span>Google Cloud Platform</span>
+      </div>
+      <div class="tech-item">
+        <img src="https://avatars.githubusercontent.com/u/42965462?s=200&v=4" alt="Dataform" class="tech-logo">
+        <span>Dataform</span>
+      </div>
+      <div class="tech-item">
+        <img src="https://cloud.google.com/images/products/bigquery/bigquery-logo.svg" alt="BigQuery" class="tech-logo">
+        <span>BigQuery</span>
+      </div>
+      <div class="tech-item">
+        <img src="https://logos-world.net/wp-content/uploads/2021/10/Looker-Symbol.png" alt="Looker Studio" class="tech-logo">
+        <span>Looker Studio</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section">
+  <div class="container">
+    <h2>About This Project</h2>
+    <p>
+      This project demonstrates modern data engineering practices using Google Dataform to build 
+      a scalable, maintainable data pipeline. The pipeline processes e-commerce data from Google's 
+      public "The Look" dataset, transforming raw data into business-ready analytics tables.
+    </p>
+    <p>
+      <strong>Key Features:</strong> Dimensional modeling, automated testing, documentation generation, 
+      and integration with business intelligence tools.
+    </p>
+    
+    <div class="project-stats">
+      <div class="stat">
+        <span class="stat-number">6</span>
+        <span class="stat-label">Source Tables</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">5</span>
+        <span class="stat-label">Dimension Tables</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">2</span>
+        <span class="stat-label">Fact Tables</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">2</span>
+        <span class="stat-label">Reporting Views</span>
+      </div>
+    </div>
+  </div>
+</section>
