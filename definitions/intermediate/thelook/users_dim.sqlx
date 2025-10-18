@@ -24,7 +24,7 @@ SELECT
   users.gender,
   users.country,
   users.traffic_source,
-  users.date_created,
+  users.created_at AS date_created,
   country_lkp.iso_abbreviation,
   ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("users")} users
