@@ -25,7 +25,7 @@ select
   user_id,
   sequence_number,
   session_id,
-  date_created, 
+  created_at AS date_created, 
   traffic_source,
   uri,
   event_type,

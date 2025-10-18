@@ -18,6 +18,6 @@ config {
 SELECT 
   id AS inventory_items_id,
   created_at AS date_created, 
-  date_sold,
+  sold_at AS date_sold,
   ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("inventory_items")}
