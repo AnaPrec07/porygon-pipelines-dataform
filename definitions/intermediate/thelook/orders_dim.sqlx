@@ -19,7 +19,6 @@ config {
   assertions: {
     nonNull: ["order_id"],
     uniqueKey: ["order_id"],
-
   }
 }
 

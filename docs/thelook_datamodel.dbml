@@ -34,7 +34,7 @@ Table order_dim {
     date_returned date
     date_shipped date
     date_delivered date
-    num_of_item ingeger
+    num_of_item integer
     order_processing_time time
     order_transit_time time
     order_lead_time time
