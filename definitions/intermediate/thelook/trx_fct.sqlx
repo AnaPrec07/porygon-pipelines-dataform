@@ -11,7 +11,7 @@ config {
     date: docs.date,
     product_brand: docs.brand,
     product_category: docs.category,
-    sale_price: docs.sale_price
+    sale_price: docs.sale_price,
     processing_timestamp: docs.processing_timestamp,
     user_country: docs.user_country,
     product_cost: docs.cost,
