@@ -103,5 +103,4 @@ module.exports = {
    gross_profit,
    profit_ytd,
    profit_last_ytd
-
 };
