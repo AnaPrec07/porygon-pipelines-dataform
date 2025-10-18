@@ -8,7 +8,7 @@ const product_id = `A unique identifier for a product.`;
 const traffic_source = `The source of the traffic (e.g., 'Organic', 'Email').`;
 const date_created = `The timestamp when the row values were created.`;
 const processing_timestamp = `The timestamp when the row was processed.`;
-const date = `The date of the record.`
+const date = `The date of the record.`;
 
 // event constants
 const event_id = `A unique identifier for an event.`;
@@ -59,7 +59,7 @@ const gross_profit = `The gross profit calculated as revenue minus cost of goods
 
 // profit_matrix_view constants
 const profit_ytd = `The year-to-date profit in USD.`;
-const profit_last_ytd = `The profit for the curreent year-to-date period last year in USD.`;
+const profit_last_ytd = `The profit for the current year-to-date period last year in USD.`;
 
 module.exports = {
    order_id,

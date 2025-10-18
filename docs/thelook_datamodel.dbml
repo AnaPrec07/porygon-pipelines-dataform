@@ -50,7 +50,7 @@ Table product_dim {
 }
 Table user_dim {
     user_id integer [pk]
-    age integetr
+    age integer
     gender string
     country string
     market string
