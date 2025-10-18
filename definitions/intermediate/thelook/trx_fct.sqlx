@@ -8,12 +8,12 @@ config {
     product_id: docs.product_id,
     inventory_item_id: docs.inventory_items_id,
     order_status: docs.status,
-    date: docs.date,
+    date: docs.date_created,
     product_brand: docs.brand,
     product_category: docs.category,
     sale_price: docs.sale_price,
     processing_timestamp: docs.processing_timestamp,
-    user_country: docs.user_country,
+    user_country: docs.country,
     product_cost: docs.cost,
     gross_profit: docs.gross_profit
   },
@@ -25,23 +25,26 @@ config {
 }
 
 SELECT 
-  order_items.order_id, 
-  order_items.user_id, 
-  order_items.product_id,
-  order_items.inventory_item_id,
-  orders.status AS order_status,
-  DATE(orders.date_created) AS date,
-  products.brand AS product_brand,
-  products.category AS product_category,
-  order_items.sale_price,
-  products.cost AS product_cost,
-  order_items.sale_price - products.cost AS gross_profit,
-  users.country AS user_country,
-  ${date_functions.getRuntimeTimestamp()}
+order_items.order_id, 
+order_items.user_id, 
+order_items.product_id,
+orders.status AS order_status,
+inventory_item_id,
+DATE(orders.date_created) AS date,
+product.brand AS product_brand,
+product.category AS produt_category,
+user.age AS user_age,
+user.gender AS user_gender,
+user.country AS user_country,
+user.iso_abbreviation,
+order_items.sale_price,
+product.cost AS product_cost,
+order_items.sale_price - products.cost AS gross_profit,
+${date_functions.getRuntimeTimestamp()}
 FROM ${ref("order_items")} order_items
 JOIN ${ref("products_dim")} products
-  ON order_items.product_id = products.product_id
+ON order_items.product_id = products.product_id
 JOIN ${ref("orders_dim")} orders
-  ON order_items.order_id = orders.order_id
+ON order_items.order_id = orders.order_id
 JOIN ${ref("users_dim")} users
-  ON order_items.user_id = users.user_id
+ON users.order_id = orders.order_id
