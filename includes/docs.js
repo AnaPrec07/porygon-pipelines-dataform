@@ -60,6 +60,7 @@ const gross_profit = `The gross profit calculated as revenue minus cost of goods
 // profit_matrix_view constants
 const profit_ytd = `The year-to-date profit in USD.`;
 const profit_last_ytd = `The profit for the current year-to-date period last year in USD.`;
+const growth = `The growth percentage calculated as (profit_ytd - profit_last_ytd) / profit_last_ytd * 100.`;
 
 module.exports = {
    order_id,
@@ -102,5 +103,6 @@ module.exports = {
    cogs,
    gross_profit,
    profit_ytd,
-   profit_last_ytd
+   profit_last_ytd,
+   growth
 };
