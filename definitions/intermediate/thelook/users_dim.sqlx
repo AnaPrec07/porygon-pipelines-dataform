@@ -1,0 +1,33 @@
+config {
+  type: "table",
+  schema: "thelook",
+  description: "Cleaned version of raw users table",
+  columns: {
+    user_id: docs.user_id,
+    age: docs.age,
+    gender: docs.gender,
+    country: docs.country,
+    traffic_source: docs.traffic_source,
+    date_created: docs.date_created,
+    processing_timestamp: docs.processing_timestamp,
+  },
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: ["user_id"],
+    uniqueKey: ["user_id"],
+
+  }
+}
+
+SELECT 
+  users.id AS user_id,
+  users.age,
+  usrs.gender,
+  users.country,
+  users.traffic_source,
+  usrs.date_created,
+  country_lkp.iso_abbreviation,
+  ${date_functions.getRuntimeTimestamp()}
+FROM ${ref("users")} users
+JOIN ${ref("country_lookup")} country_lkp
+ON users.country = country_lkp.country_name

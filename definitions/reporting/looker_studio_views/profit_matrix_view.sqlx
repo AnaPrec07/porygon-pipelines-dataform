@@ -1,0 +1,44 @@
+config {
+  type: "view",
+  schema: "looker_studio_views",
+  description: "View that reports profit matrix per category",
+  columns: {
+    category: docs.category,
+    profit_ytd: docs.profit_ytd
+    profit_last_ytd: docs.profit_last_ytd
+  },
+  tags: ["reporting"],
+  assertions: {
+    nonNull: ["category"],
+    uniqueKey: ["category"],
+  }
+}
+
+WITH year_to_date AS (
+  SELECT 
+    category,
+    SUM(gross_profit) AS profit_ytd
+    FROM `porygon-pipelines.looker_studio_views.profit_view`
+    WHERE EXTRACT(YEAR from date) = EXTRACT(YEAR FROM CURRENT_DATE)
+    GROUP BY 
+    category
+),
+last_year_to_date AS (
+  SELECT 
+    category,
+    SUM(gross_profit) AS profit_last_ytd
+    FROM `porygon-pipelines.looker_studio_views.profit_view`
+    WHERE EXTRACT(YEAR from date) = (EXTRACT(YEAR FROM CURRENT_DATE)-1)
+    GROUP BY 
+    category
+)
+SELECT 
+  ytd.category,
+  ytd.profit_ytd,
+  last_ytd.profit_last_ytd,
+  (ytd.profit_ytd-last_ytd.profit_last_ytd)/last_ytd.profit_last_ytd AS growth
+  FROM year_to_date ytd
+  LEFT JOIN last_year_to_date last_ytd
+  ON ytd.category = last_ytd.category
+
+

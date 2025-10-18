@@ -1,40 +1,38 @@
 config {
   type: "table",
-  schema: "s_thelook",
+  schema: "thelook",
   description: "Cleaned version of raw orders table",
   columns: {
     order_id: docs.order_id,
-    user_id: docs.user_id,
     status: docs.status,
-    created_at: docs.created_at,
-    returned_at: docs.returned_at,
-    shipped_at: docs.shipped_at,
-    delivered_at: docs.delivered_at,
+    date_created: docs.date_created,
+    date_returned: docs.date_returned,
+    date_shipped: docs.date_shipped,
+    date_delivered: docs.date_delivered,
     num_of_item: docs.num_of_item,
     order_processing_time: docs.order_processing_time,
     order_transit_time: docs.order_transit_time,
     order_lead_time: docs.order_lead_time,
-    processed_at: docs.processed_at,
+    processing_timestamp: docs.processing_timestamp,
   },
-  tags: ["staging"],
+  tags: ["intermediate"],
   assertions: {
     nonNull: ["order_id"],
     uniqueKey: ["order_id"],
-    rowConditions: [assertions.table_successfully_updated]
+
   }
 }
 
 SELECT 
   order_id,
-  user_id,
   status,
-  created_at,
-  returned_at,
-  shipped_at,
-  delivered_at,
+  date_created,
+  date_returned,
+  date_shipped,
+  date_delivered,
   num_of_item,
-  shipped_at-created_at AS order_processing_time,
-  delivered_at-shipped_at AS order_transit_time,
-  delivered_at-created_at AS order_lead_time,
+  date_shipped-date_created AS order_processing_time,
+  date_delivered-date_shipped AS order_transit_time,
+  date_delivered-date_created AS order_lead_time,
   ${date_functions.getRuntimeTimestamp()}
 FROM ${ref("orders")}
