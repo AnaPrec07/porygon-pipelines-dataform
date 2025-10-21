@@ -10,7 +10,7 @@
 
 This project solves the **critical business problem of data silos and delayed insights** by implementing a modern, cloud-native data pipeline that transforms raw e-commerce data into actionable business intelligence. Built with **Google Dataform**, **BigQuery**, **Storage** and **Looker Studio**, it delivers:
 
-- **Centralized Single Source of Truth (SST)** removing data fragmentation and enabling aster time-to-insight through automated, real-time data processing and self-service analytics.
+- **Centralized Single Source of Truth (SST)** removing data fragmentation and enabling faster time-to-insight through automated, real-time data processing and self-service analytics.
 - **Data accuracy** through comprehensive data quality frameworks ensuring data consistency and providing clarity on data lineage.
 - **Efficient operationas** through reduced cost due to its server-less architecture. It removes scalability bottle-necks through to its modular pipeline design and star schema data model.
 s
