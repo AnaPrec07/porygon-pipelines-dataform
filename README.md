@@ -13,7 +13,6 @@ This project solves the **critical business problem of data silos and delayed in
 - **Centralized Single Source of Truth (SST)** removing data fragmentation and enabling faster time-to-insight through automated, real-time data processing and self-service analytics.
 - **Data accuracy** through comprehensive data quality frameworks ensuring data consistency and providing clarity on data lineage.
 - **Efficient operations** through reduced cost due to its server-less architecture. It removes scalability bottle-necks through to its modular pipeline design and star schema data model.
-s
 ---
 
 ## The Need Addressed
