@@ -133,13 +133,10 @@ erDiagram
 
 Based on current consumption, I estimate this project to cost a maximum of $13 per month.
 
----
+## Business Intelligence Dashboards
 
-
-## Business Intelligence Dashbaords
-
-### 1. Executive Summary Dashbaord
+### 1. Executive Summary Dashboard
 [View Dashboard](https://lookerstudio.google.com/embed/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/Gg3)  
 
-### 2. Profit Matix per Category Dashbaord
+### 2. Profit Matix per Category Dashboard
 [View Dashboard](https://lookerstudio.google.com/embed/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/p_4gtrw0g7wd)  
