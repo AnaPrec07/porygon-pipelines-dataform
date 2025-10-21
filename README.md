@@ -33,7 +33,7 @@ I decided to build this solution using Google due my familiarity with its ecosys
 | Product | Description | Decision Factor | 
 |--------|------------|------------|
 | **BigQuery** | Serverless data warehouse for storing and querying structured data at petabyte scale using SQL. |Performative, Scalable, Cost-efficient, Seamless integration, Supports analytics | 
-| **Dataform** | A data transformation and orchestration tool built specifically for SQL-based pipelines in BigQuery.| Git version-control through git, Data-lineage clarity,  Data Qualtiy Chekcs and Unit-Testing Integrations, Works directly in BigQuery without the need of additional infrastructure. |
+| **Dataform** | A data transformation and orchestration tool built specifically for SQL-based pipelines in BigQuery.| Git version-control through git, Data-lineage clarity,  Data Quality Checks and Unit-Testing Integrations, Works directly in BigQuery without the need of additional infrastructure. |
 | **Looker studio** | Business intelligence (BI) and visualization tool that connects directly to BigQuery and other data sources | Seamless BigQuery integration, Supports real time updates. |
 | **Cloud Storage** | A secure, scalable object storage system for raw and semi-processed data (CSV, Parquet, JSON, logs, etc.). | Seamless integration with BigQuery external tables, Cost efficient. |
 
