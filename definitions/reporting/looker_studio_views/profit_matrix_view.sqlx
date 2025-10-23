@@ -5,7 +5,8 @@ config {
   columns: {
     product_category: docs.category,
     profit_ytd: docs.profit_ytd,
-    profit_last_ytd: docs.profit_last_ytd
+    profit_last_ytd: docs.profit_last_ytd,
+    growth: docs.growth
   },
   tags: ["reporting"],
   assertions: {

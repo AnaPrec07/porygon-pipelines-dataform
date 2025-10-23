@@ -1,0 +1,75 @@
+Table trx_fct {
+    order_id INTEGER [pk]
+    product_id INTEGER [pk]
+    inventory_item_id INTEGER [pk]
+    user_id INTEGER
+    order_status STRING
+    date DATE
+    product_brand STRING
+    product_category STRING
+    user_age INTEGER
+    user_gender STRING
+    user_country STRING
+    iso_abbreviation STRING
+    sale_price NUMERIC
+    product_cost NUMERIC
+    gross_profit NUMERIC
+    processing_timestamp TIMESTAMP
+}
+Table inventory_dim {
+    inventory_item_id INTEGER [pk]
+    date_created DATE
+    date_sold DATE
+    processing_timestamp TIMESTAMP
+}
+Table events_fct {
+    event_id INTEGER [pk]
+    user_id INTEGER
+    sequence_number INTEGER
+    session_id INTEGER
+    date_created DATE
+    traffic_source STRING
+    uri STRING
+    event_type STRING
+    processing_timestamp TIMESTAMP
+}
+Table orders_dim {
+    order_id INTEGER [pk]
+    status STRING
+    date_created DATE
+    date_returned DATE
+    date_shipped DATE
+    date_delivered DATE
+    num_of_item INTEGER
+    order_processing_time time
+    order_transit_time time
+    order_lead_time time
+    processing_timestamp TIMESTAMP
+}
+Table products_dim {
+    product_id INTEGER [pk]
+    cost NUMERIC
+    category STRING
+    brand STRING
+    retail_price NUMERIC
+    markup NUMERIC
+    department STRING
+    processing_timestamp TIMESTAMP
+}
+Table users_dim {
+    user_id INTEGER [pk]
+    age INTEGER
+    gender STRING
+    country strin
+    traffic_source STRING
+    date_created DATE
+    iso_abbreviation STRING
+    processing_timestamp TIMESTAMP
+}
+
+Ref: trx_fct.order_id > orders_dim.order_id
+Ref: trx_fct.product_id > products_dim.product_id
+Ref: trx_fct.inventory_item_id - inventory_dim.inventory_item_id
+Ref: trx_fct.user_id > users_dim.user_id
+
+Ref: events_fct.user_id > users_dim.user_id
