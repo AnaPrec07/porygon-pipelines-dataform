@@ -138,5 +138,5 @@ Based on current consumption, I estimate this project to cost a maximum of $13 p
 ### 1. Executive Summary Dashboard
 [View Dashboard](https://lookerstudio.google.com/embed/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/Gg3)  
 
-### 2. Profit Matix per Category Dashboard
+### 2. Profit Matrix per Category Dashboard
 [View Dashboard](https://lookerstudio.google.com/embed/reporting/224a01ba-2006-4fc4-91ba-c20807589a23/page/p_4gtrw0g7wd)  
