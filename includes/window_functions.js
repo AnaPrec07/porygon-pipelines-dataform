@@ -7,11 +7,11 @@
  * @param {string} alias - Prefix for the generated column aliases (e.g., 'target_')
  * @returns {string} Formatted LEAD window functions
  */
-function generateLeadTGTColumns(columnName, maxLead, partitionBy, orderBy, alias = 'lead_') {
+function generateLeadColumns(columnName, maxLead, partitionBy, orderBy, alias = 'lead_') {
   const columns = [];
   for (let i = 1; i <= maxLead; i++) {
     columns.push(
-      `    LEAD(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS tgt_${columnName}_${alias}${i}`
+      `    LEAD(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${columnName}_${alias}${i}_months`
     );
   }
   return columns.join(',\n');
@@ -24,14 +24,14 @@ function generateLagColumns(columnName, maxLag, partitionBy, orderBy, alias = 'l
   const columns = [];
   for (let i = 1; i <= maxLag; i++) {
     columns.push(
-      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${alias}${i}`
+      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${columnName}_${alias}${i}_months`
     );
   }
   return columns.join(',\n');
 }
 
 module.exports = {
-  generateLeadTGTColumns,
+  generateLeadColumns,
   generateLagColumns,
 
 };
