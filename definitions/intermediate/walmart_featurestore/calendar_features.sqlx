@@ -4,15 +4,25 @@ config {
   description: "Calendar features.",
   columns: {
     ctx_date_month: walmart_descriptions.ctx_date_month,
-
+    fea_is_weekend: walmart_descriptions.fea_is_weekend,
+    fea_is_event_1: walmart_descriptions.fea_is_event,
+    fea_is_event_2: walmart_descriptions.fea_is_event,
+    fea_is_sporting_event: walmart_descriptions.fea_is_sporting_event,
+    fea_is_cultural_event: walmart_descriptions.fea_is_cultural_event
+    fea_is_national_event: walmart_descriptions.fea_is_national_event
+    fea_is_religious_event: walmart_descriptions.fea_is_religious_event
+    fea_is_snap_ca: walmart_descriptions.fea_is_snap_ca
+    fea_is_snap_tx: walmart_descriptions.fea_is_snap_tx
+    fea_is_snap_wi: walmart_descriptions.fea_is_snap_wi
+    fea_month_sin: walmart_descriptions.fea_month_sin
   },
   tags: ["intermediate"],
   assertions: {
     nonNull: [
-
+        "ctx_date_month!
     ],
     uniqueKey: [
-
+        "ctx_date_month"
     ],
   }
 }

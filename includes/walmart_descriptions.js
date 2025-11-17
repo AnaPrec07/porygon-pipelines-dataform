@@ -14,6 +14,18 @@ const tgt_monthly_sales_lead_2_months = `TGT monthly sales lead 2 months for obs
 const tgt_monthly_sales_lead_3_months = `TGT monthly sales lead 3 months for observation.`;
 const tgt_monthly_sales_lead_4_months = `TGT monthly sales lead 4 months for observation.`;
 
+// Calendar features
+const fea_is_weekend = "Feature indicating the number of weekend days in the month.";
+const fea_is_event = "Feature indicating number of special events in the month.";
+const fea_is_sporting_event = "Feature indicating number of sporting events in the month.";
+const fea_is_cultural_event = "Feature indicating number of cultural events in the month.";
+const fea_is_national_event = "Feature indicating number of national events in the month.";
+const fea_is_religious_event = "Feature indicating number of religious events in the month.";
+const fea_is_snap_ca = "Feature indicating number of days SNAP benefits are accepted in California.";
+const fea_is_snap_tx = "Feature indicating number of days SNAP benefits are accepted in Texas.";
+const fea_is_snap_wi = "Feature indicating number of days SNAP benefits are accepted in Wisconsin.";
+const fea_month_sin = "Sine transformation of the month to capture seasonality.";
+
 module.exports = {
     ctx_date_month,
     ctx_state_id,
