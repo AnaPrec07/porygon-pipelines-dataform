@@ -9,9 +9,9 @@ config {
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
 (
   store_id STRING,
-  item_id STRING
-  wm_yr_wk INTEGER
-  sell_price FLOAT
+  item_id STRING,
+  wm_yr_wk INTEGER,
+  sell_price FLOAT,
 )
 OPTIONS (
   format = 'CSV',
