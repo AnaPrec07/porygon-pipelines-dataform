@@ -34,7 +34,7 @@ function generateRollAvgNoPartition(columnName, alias = 'roll_avg_', windows = [
   const columns = [];
   windows.forEach(i => {
     columns.push(
-      `    AVG(${columnName}) OVER (ORDER BY ctx_date_month ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS fea_${columnName}_${alias}${i}_months`
+      `    AVG(${columnName}) OVER (ORDER BY ctx_date_month ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_${alias}${i}_months`
     );
   });
   return columns.join(',\n');
