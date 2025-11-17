@@ -24,12 +24,12 @@ config {
 }
 
 SELECT 
-    ctx_date_month,
-    ctx_cat_id,
-    ctx_dept_id,
-    ctx_item_id,
-    ctx_state_id,
-    ctx_store_id,
+    tgt.ctx_date_month,
+    tgt.ctx_cat_id,
+    tgt.ctx_dept_id,
+    tgt.ctx_item_id,
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
     tgt_monthly_sales_lead_1_months,
     tgt_monthly_sales_lead_2_months,
     tgt_monthly_sales_lead_3_months,
@@ -99,7 +99,3 @@ LEFT JOIN ${ref("rolling_sales_features")} roll_feas
     ON roll_feas.ctx_date_month = tgt.ctx_date_month
     AND roll_feas.ctx_item_id = tgt.ctx_item_id
     AND roll_feas.ctx_store_id = tgt.ctx_store_id
-
-
-
-
