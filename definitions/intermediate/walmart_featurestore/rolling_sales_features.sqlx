@@ -76,6 +76,7 @@ base_features_ts AS (
   FROM base_features
 ),
 item_sales AS (
+  SELECT
   ctx_item_id,
   ctx_store_id,
   ctx_date_month,
