@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "walmart_training_talbles",
+  schema: "walmart_training_tables",
   description: "versioned training tables.",
   tags: ["intermediate"],
   assertions: {
