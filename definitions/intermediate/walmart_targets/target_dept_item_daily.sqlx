@@ -41,6 +41,7 @@ WITH dept_item_daily_sales AS (
   SELECT
     day,
     SUM(sales) AS daily_sales,
+    state_id,
     store_id,
     cat_id,
     dept_id,
@@ -55,7 +56,8 @@ WITH dept_item_daily_sales AS (
     )
   )
   GROUP BY 
-    day, 
+    day,
+    state_id
     store_id,
     cat_id,
     dept_id,
@@ -64,7 +66,7 @@ WITH dept_item_daily_sales AS (
 dept_item_daily_sales_with_calendar_dates AS (
     SELECT 
         cal.date AS ctx_date,
-        REGEXP_EXTRACT(daily_sales.store_id, r'^([^_]+)') AS ctx_state_id,
+        daily_sales.state_id AS ctx_state_id,
         daily_sales.store_id AS ctx_store_id,
         daily_sales.cat_id AS ctx_cat_id,
         daily_sales.dept_id AS ctx_dept_id,
