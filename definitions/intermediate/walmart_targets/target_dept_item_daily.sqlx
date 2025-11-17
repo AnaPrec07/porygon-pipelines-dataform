@@ -50,8 +50,7 @@ WITH dept_item_daily_sales AS (
     FROM ${ref("sales_train_validation")}
     UNPIVOT (
       sales FOR day IN (
-            ${schema_helpers.selectDayColumns(1, 1912, 'd_')},
-            d_1913
+            ${schema_helpers.selectDayColumns(1, 1913, 'd_')}
         )
     )
   )
