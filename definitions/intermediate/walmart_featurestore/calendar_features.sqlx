@@ -57,7 +57,7 @@ WITH intermediate_aggregations AS (
     snap_CA,
     snap_TX,
     snap_WI
-  FROM FROM ${ref("calendar")}
+  FROM ${ref("calendar")}
 )
 SELECT 
   ctx_date_month, 
