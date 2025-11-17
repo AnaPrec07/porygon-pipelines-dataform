@@ -79,11 +79,11 @@ item_sales AS (
   SELECT
   ctx_item_id,
   ctx_store_id,
-  ctx_date_month,
+  src.ctx_date_month,
   tgt_monthly_sales AS fea_item_monthly_sales,
-  FROM ${ref("target_store_item_monthly")} source
+  FROM ${ref("target_store_item_monthly")} src
   JOIN base_features_ts fea_ts
-  ON source.ctx_date_month = fea_ts.ctx_date_month
+  ON src.ctx_date_month = fea_ts.ctx_date_month
 )
 SELECT 
   *,
