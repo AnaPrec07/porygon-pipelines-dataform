@@ -22,6 +22,7 @@ WITH item_sales AS (
   FROM ${ref("target_store_item_monthly")} src
 )
 SELECT 
+  it.ctx_date_month,
   it.ctx_item_id,
   it.ctx_store_id,
   it.fea_item_monthly_sales,
