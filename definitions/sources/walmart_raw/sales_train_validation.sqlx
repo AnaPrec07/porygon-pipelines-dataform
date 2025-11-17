@@ -3,17 +3,17 @@ config {
   tags: ["setup"],
   hasOutput: true,
   schema: "walmart_raw",
-  name: "sales_train_validation.sqlx"
+  name: "sales_train_validation"
 }
 
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
 (
   id STRING,
-  item_id STRING
-  dept_id STRING
-  cat_id STRING
-  store_id STRING
-  ${selectDayColumns(1, 1913, 'd_')}
+  item_id STRING,
+  dept_id STRING,
+  cat_id STRING,
+  store_id STRING,
+  ${schema_helpers.selectDayColumns(1, 1913, 'd_')}
 )
 OPTIONS (
   format = 'CSV',
