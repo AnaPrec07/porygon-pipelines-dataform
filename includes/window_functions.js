@@ -24,7 +24,7 @@ function generateLagColumns(columnName, maxLag, partitionBy, orderBy, hierarchy_
   const columns = [];
   for (let i = 1; i <= maxLag; i++) {
     columns.push(
-      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS fea_${columnName}${hierarchy_name}_${alias}${i}_months`
+      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${columnName}${hierarchy_name}_${alias}${i}_months`
     );
   }
   return columns.join(',\n');
