@@ -88,4 +88,6 @@ item_sales AS (
 SELECT 
   *,
   ${window_functions.generateRollAvgNoPartition("fea_item_monthly_sales")}
-FROM item_sales
+FROM item_sales it
+JOIN base_features_ts base
+ON it.ctx_date_month = base.ctx_date_month
