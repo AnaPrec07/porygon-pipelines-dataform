@@ -10,7 +10,7 @@ config {
         "ctx_dept_id",
         "ctx_item_id",
         "ctx_state_id",
-        "ctx_store_id
+        "ctx_store_id"
     ],
     uniqueKey: [
         "ctx_date_month",
@@ -18,7 +18,7 @@ config {
         "ctx_dept_id",
         "ctx_item_id",
         "ctx_state_id",
-        "ctx_store_id
+        "ctx_store_id"
     ]
   }
 }
@@ -36,11 +36,11 @@ SELECT
     tgt_monthly_sales_lead_4_months,
     fea_is_weekend,
     fea_is_event_1,
-    fea_is_event_2
+    fea_is_event_2,
     fea_is_sporting_event,
     fea_is_cultural_event,
     fea_is_national_event,
-    fea_is_religious_event.
+    fea_is_religious_event,
     fea_is_snap_ca,
     fea_is_snap_tx,
     fea_is_snap_wi,
@@ -97,8 +97,8 @@ LEFT JOIN ${ref("global_rolling_sales_features")} glob_feas
     ON glob_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("rolling_sales_features")} roll_feas
     ON roll_feas.ctx_date_month = tgt.ctx_date_month
-    ON roll_feas.ctx_item_id = tgt.ctx_item_id
-    ON roll_feas.ctx_store_id = tgt.ctx_store_id
+    AND roll_feas.ctx_item_id = tgt.ctx_item_id
+    AND roll_feas.ctx_store_id = tgt.ctx_store_id
 
 
 
