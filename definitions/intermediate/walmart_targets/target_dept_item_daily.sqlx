@@ -104,9 +104,9 @@ SELECT
     ctx_item_id,
     tgt_monthly_sales,
     ${window_functions.generateLeadColumns(
-    tgt_monthly_sales, 
+    "tgt_monthly_sales", 
     4, 
-    "ctx_state_id,ctx_store_id,ctx_cat_id,ctx_dept_id,ctx_item_id,",
+    "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
     "ctx_date_month"
     )}
 FROM dept_item_monthly_sales
