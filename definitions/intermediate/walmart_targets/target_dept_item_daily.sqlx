@@ -57,7 +57,7 @@ WITH dept_item_daily_sales AS (
   )
   GROUP BY 
     day,
-    state_id
+    state_id,
     store_id,
     cat_id,
     dept_id,
