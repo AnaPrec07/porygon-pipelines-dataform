@@ -23,6 +23,7 @@ WITH intermediate_aggregations AS (
     CAST(weekday IN ("Sunday","Saturday") AS INT64) AS is_weekend,
     CAST(event_name_1 IS NOT NULL AS INT64) AS is_event_1,
     CAST(event_name_2 IS NOT NULL AS INT64) AS is_event_2,
+    SIN(2 * ACOS(-1) * EXTRACT(MONTH FROM date) / 12) AS fea_month_sin,
     CASE 
       WHEN event_type_1 = "Sporting" OR event_type_1 = "Sporting"
         THEN 1
@@ -60,5 +61,8 @@ SELECT
   SUM(snap_CA) AS fea_is_snap_ca,
   SUM(snap_TX) AS fea_is_snap_tx,
   SUM(snap_WI) AS fea_is_snap_wi,
+  fea_month_sin
 FROM intermediate_aggregations
-GROUP BY ctx_date_month
+GROUP BY 
+    ctx_date_month, 
+    fea_month_sin
