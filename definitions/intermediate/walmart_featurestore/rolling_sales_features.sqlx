@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "rolling_sales_features",
+  schema: "walmart_featurestore",
   description: "Rolling sales features per multiple hierarchy levels.",
   tags: ["intermediate"],
   assertions: {
