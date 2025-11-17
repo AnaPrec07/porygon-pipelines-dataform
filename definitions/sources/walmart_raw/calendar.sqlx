@@ -19,7 +19,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   event_type_1 STRING,
   event_name_2 STRING,
   event_type_2 STRING,
-  snap_CA INGEGER,
+  snap_CA INTEGER,
   snap_TX INTEGER,
   snap_WI INTEGER
 )
