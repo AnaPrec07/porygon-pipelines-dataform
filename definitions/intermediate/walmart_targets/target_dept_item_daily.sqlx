@@ -41,26 +41,23 @@ WITH dept_item_daily_sales AS (
   SELECT
     day,
     SUM(sales) AS daily_sales,
-    state_id,
     store_id,
     cat_id,
     dept_id,
-    item_id,
+    item_id
   FROM (
     SELECT *
     FROM ${ref("sales_train_validation")}
     UNPIVOT (
       sales FOR day IN (
-            ${schema_helpers.selectDayColumns(1, 1912, 'd_')}
+            ${schema_helpers.selectDayColumns(1, 1912, 'd_')},
             d_1913
         )
     )
   )
   GROUP BY 
     day, 
-    state_id,
     store_id,
-    state_id,
     cat_id,
     dept_id,
     item_id
@@ -68,19 +65,19 @@ WITH dept_item_daily_sales AS (
 dept_item_daily_sales_with_calendar_dates AS (
     SELECT 
         cal.date AS ctx_date,
-        daily_sales.state_id AS ctx_state_id,
+        REGEXP_EXTRACT(daily_sales.store_id, r'^([^_]+)') AS ctx_state_id,
         daily_sales.store_id AS ctx_store_id,
         daily_sales.cat_id AS ctx_cat_id,
         daily_sales.dept_id AS ctx_dept_id,
         daily_sales.item_id AS ctx_item_id,
-        daily_sales.daily_sales AS tgt_daily_sales,
+        daily_sales.daily_sales AS tgt_daily_sales
     FROM dept_item_daily_sales daily_sales
     JOIN ${ref("calendar")} cal
-    ON cal.d = ts.day
+    ON cal.d = daily_sales.day
 ),
 dept_item_monthly_sales AS (
     SELECT 
-        DATE_TRUCN(ctx_date, MONTH) AS ctx_date_month,
+        DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
         ctx_state_id,
         ctx_store_id,
         ctx_cat_id,
@@ -104,7 +101,7 @@ SELECT
     ctx_dept_id,
     ctx_item_id,
     tgt_monthly_sales
-    ${window_functions.generateLeadColumns (
+    ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
     4, 
     "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
