@@ -3,13 +3,17 @@ config {
   schema: "walmart_targets",
   description: "Target for deptartment, item, daily hierarchy.",
   columns: {
-    ctx_date_month,
-    ctx_state_id,
-    ctx_store_id,
-    ctx_cat_id,
-    ctx_dept_id,
-    ctx_item_id,
-    tgt_monthly_sales,
+    ctx_date_month: walmart_descriptions.ctx_date_month,
+    ctx_state_id: walmart_descriptions.ctx_state_id,
+    ctx_store_id: walmart_descriptions.ctx_store_id,
+    ctx_cat_id: walmart_descriptions.ctx_cat_id,
+    ctx_dept_id: walmart_descriptions.ctx_dept_id,
+    ctx_item_id: walmart_descriptions.ctx_item_id,
+    tgt_monthly_sales: walmart_descriptions.tgt_monthly_sales,
+    tgt_monthly_sales_lead_1_months: walmart_descriptions.tgt_monthly_sales_lead_1_months,
+    tgt_monthly_sales_lead_2_months: walmart_descriptions.tgt_monthly_sales_lead_2_months,
+    tgt_monthly_sales_lead_3_months: walmart_descriptions.tgt_monthly_sales_lead_3_months,
+    tgt_monthly_sales_lead_4_months: walmart_descriptions.tgt_monthly_sales_lead_4_months,
   },
   tags: ["intermediate"],
   assertions: {
@@ -99,9 +103,9 @@ SELECT
     ctx_dept_id,
     ctx_item_id,
     tgt_monthly_sales,
-    ${window_functions.generateLeadTGTColumns(
+    ${window_functions.generateLeadColumns(
     daily_sales.tgt_monthly_sales, 
-    5, 
+    4, 
     "ctx_state_id,ctx_store_id,ctx_cat_id,ctx_dept_id,ctx_item_id,",
     "ctx_date_month"
     )}
