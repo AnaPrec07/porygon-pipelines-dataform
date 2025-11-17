@@ -13,7 +13,7 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
   dept_id STRING,
   cat_id STRING,
   store_id STRING,
-  ${schema_helpers.selectDayColumns(1, 1913, 'd_')}
+  ${schema_helpers.selectDayColumns(1, 1913, 'd_', 'INTEGER')}
 )
 OPTIONS (
   format = 'CSV',

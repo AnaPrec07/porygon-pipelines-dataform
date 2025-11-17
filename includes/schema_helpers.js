@@ -3,11 +3,11 @@
 /**
  * Generates SELECT statement for day columns
  */
-function selectDayColumns(startDay, endDay, prefix = 'd_') {
+function selectDayColumns(startDay, endDay, prefix = 'd_', data_type='' ) {
   const columns = [];
   for (let i = startDay; i <= endDay; i++) {
     const colName = `${prefix}${i}`;
-    columns.push(`${colName} INTEGER`);
+    columns.push(`${colName} ${data_type}`);
   }
   return columns.join(',\n    ');
 }
