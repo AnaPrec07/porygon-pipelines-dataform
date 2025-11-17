@@ -87,7 +87,7 @@ dept_item_monthly_sales AS (
         SUM(tgt_daily_sales) AS tgt_monthly_sales
     FROM dept_item_daily_sales_with_calendar_dates
     GROUP BY 
-        ctx_date_month,
+        DATE_TRUNC(ctx_date, MONTH),
         ctx_state_id,
         ctx_store_id,
         ctx_cat_id,
