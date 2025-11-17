@@ -51,7 +51,7 @@ WITH dept_item_daily_sales AS (
     FROM ${ref("sales_train_validation")}
     UNPIVOT (
       sales FOR day IN (
-            ${schema_helpers.selectDayColumns(1, 1912, 'd_')},
+            ${schema_helpers.selectDayColumns(1, 1912, 'd_')}
             d_1913
         )
     )
@@ -63,7 +63,7 @@ WITH dept_item_daily_sales AS (
     state_id,
     cat_id,
     dept_id,
-    item_id,
+    item_id
 ),
 dept_item_daily_sales_with_calendar_dates AS (
     SELECT 
@@ -104,7 +104,7 @@ SELECT
     ctx_dept_id,
     ctx_item_id,
     tgt_monthly_sales
-    ${window_functions.generateLeadColumns(
+    ${window_functions.generateLeadColumns (
     "tgt_monthly_sales", 
     4, 
     "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
