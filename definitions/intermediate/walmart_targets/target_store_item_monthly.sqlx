@@ -72,7 +72,7 @@ dept_item_daily_sales_with_calendar_dates AS (
         daily_sales.dept_id AS ctx_dept_id,
         daily_sales.item_id AS ctx_item_id,
         daily_sales.daily_sales AS tgt_daily_sales,
-        CASE WHEN daily_sales.daily_sales = "0" THEN 1 ELSE 0 END AS fea_is_zero_sales
+        CASE WHEN daily_sales.daily_sales = 0 THEN 1 ELSE 0 END AS tgt_is_zero_sales
     FROM dept_item_daily_sales daily_sales
     JOIN ${ref("calendar")} cal
     ON cal.d = daily_sales.day
@@ -86,7 +86,7 @@ dept_item_monthly_sales AS (
         ctx_dept_id,
         ctx_item_id,
         SUM(tgt_daily_sales) AS tgt_monthly_sales,
-        SUM(fea_is_zero_sales) AS fea_days_is_zero_sales
+        SUM(tgt_is_zero_sales) AS tgt_days_is_zero_sales
     FROM dept_item_daily_sales_with_calendar_dates
     GROUP BY 
         DATE_TRUNC(ctx_date, MONTH),
@@ -104,7 +104,7 @@ SELECT
     ctx_dept_id,
     ctx_item_id,
     tgt_monthly_sales,
-    fea_days_is_zero_sales,
+    tgt_days_is_zero_sales,
     ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
     4, 
@@ -112,7 +112,7 @@ SELECT
     "ctx_date_month"
     )},
     ${window_functions.generateLeadColumns(
-    "fea_days_is_zero_sales", 
+    "tgt_days_is_zero_sales", 
     4, 
     "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
     "ctx_date_month"
