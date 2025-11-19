@@ -43,7 +43,7 @@ item_across_state AS (
     it.ctx_state_id,
     SUM(it.fea_item_monthly_sales) AS fea_state_item_monthly_sales,
     SUM(it.fea_num_days_item_is_zero_sales) AS fea_state_item_num_days_is_zero_sales,
-  FROM item_sales it
+  FROM cleanned_targets it
   GROUP BY 
     it.ctx_date_month,
     it.ctx_item_id,
@@ -55,7 +55,7 @@ item_total AS (
     it.ctx_item_id,
     SUM(it.fea_item_monthly_sales) AS fea_all_item_monthly_sales,
     SUM(it.fea_num_days_item_is_zero_sales) AS fea_all_item_num_days_is_zero_sales,
-  FROM item_sales it
+  FROM cleanned_targets it
   GROUP BY 
     it.ctx_date_month,
     it.ctx_item_id
