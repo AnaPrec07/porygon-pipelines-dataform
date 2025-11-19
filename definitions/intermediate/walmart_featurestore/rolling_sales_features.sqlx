@@ -35,6 +35,30 @@ WITH cleanned_targets AS (
   tgt_monthly_sales AS fea_item_monthly_sales,
   tgt_days_is_zero_sales AS fea_num_days_item_is_zero_sales
   FROM cleanned_targets src
+),
+item_across_state AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    it.ctx_state_id,
+    SUM(it.fea_item_monthly_sales) AS fea_state_item_monthly_sales,
+    SUM(it.fea_num_days_item_is_zero_sales) AS fea_state_item_num_days_is_zero_sales,
+  FROM item_sales it
+  GROUP BY 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    it.ctx_state_id,
+),
+item_total AS (
+  SELECT 
+    it.ctx_date_month,
+    it.ctx_item_id,
+    SUM(it.fea_item_monthly_sales) AS fea_all_item_monthly_sales,
+    SUM(it.fea_num_days_item_is_zero_sales) AS fea_all_item_num_days_is_zero_sales,
+  FROM item_sales it
+  GROUP BY 
+    it.ctx_date_month,
+    it.ctx_item_id
 )
 SELECT 
   it.ctx_date_month,
@@ -42,7 +66,32 @@ SELECT
   it.ctx_store_id,
   it.fea_item_monthly_sales,
   it.fea_num_days_item_is_zero_sales,
-  ${window_functions.generateRollAvgNoPartition("fea_item_monthly_sales")},
-  ${window_functions.generateRollAvgNoPartition("fea_num_days_item_is_zero_sales")}
-FROM item_sales it
+  fea_state_item_monthly_sales,
+  fea_state_item_num_days_is_zero_sales,
+  fea_all_item_monthly_sales,
+  fea_all_item_num_days_is_zero_sales,
+
+  -- Window functions for item store level
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
+  ${window_functions.generateLagColumns("fea_item_monthly_sales", 4)},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")}
+  ${window_functions.generateLagColumns("fea_num_days_item_is_zero_sales", 4)},
+
+  -- Window functions for item state level
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_monthly_sales", partitionBy="ctx_item_id, ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_num_days_is_zero_sales", partitionBy="ctx_item_id, ctx_state_id")},
+
+  -- Window functions for item level
+  ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
+
+
+FROM item_sales it 
+LEFT JOIN item_across_state it_state
+ON it.ctx_date_month = it_state.ctx_date_month
+AND it.ctx_item_id = it_state.ctx_item_id
+AND it.ctx_state_id = it_state.ctx_state_id
+LEF JOIN item_total it_all
+ON it.ctx_date_month = it_sit_alltate.ctx_date_month
+AND it.ctx_item_id = it_all.ctx_item_id
 

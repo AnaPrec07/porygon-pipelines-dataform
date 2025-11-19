@@ -33,7 +33,23 @@ WITH price_with_date AS (
     ON p.wm_yr_wk = c.wm_yr_wk
 ),
 
--- Item-level price features
+-- Item-Store-level price features
+item_store_price_features AS (
+  SELECT
+    date_month,
+    store_id,
+    item_id,
+    dept_id,
+    state_id,
+    AVG(sell_price) AS fea_item_store_price_avg,
+    MIN(sell_price) AS fea_item_store_price_min,
+    MAX(sell_price) AS fea_item_store_price_max,
+    STDDEV(sell_price) AS fea_store_item_price_std
+  FROM price_with_date
+  GROUP BY date_month, store_id, item_id, dept_id, state_id
+),
+
+-- Item-Store-level price features
 item_price_features AS (
   SELECT
     date_month,
@@ -46,9 +62,8 @@ item_price_features AS (
     MAX(sell_price) AS fea_item_price_max,
     STDDEV(sell_price) AS fea_item_price_std
   FROM price_with_date
-  GROUP BY date_month, store_id, item_id, dept_id, state_id
+  GROUP BY date_month, item_id
 ),
-
 -- Store-level price features
 store_price_features AS (
   SELECT
@@ -80,7 +95,6 @@ state_price_features AS (
 dept_price_features AS (
   SELECT
     date_month,
-    store_id,
     dept_id,
     AVG(sell_price) AS fea_dept_price_avg,
     MIN(sell_price) AS fea_dept_price_min,
@@ -88,7 +102,7 @@ dept_price_features AS (
     STDDEV(sell_price) AS fea_dept_price_std,
     COUNT(DISTINCT item_id) AS fea_dept_unique_items
   FROM price_with_date
-  GROUP BY date_month, store_id, dept_id
+  GROUP BY date_month, dept_id
 ),
 
 -- Price change tracking
@@ -158,7 +172,13 @@ combined_features AS (
     ip.fea_item_price_min,
     ip.fea_item_price_max,
     ip.fea_item_price_std,
-    
+
+    -- Item-Store-level features
+    ip.fea_item_store_price_avg,
+    ip.fea_item_store_price_min,
+    ip.fea_item_store_price_max,
+    ip.fea_item_store_price_std,
+
     -- Store-level features
     sp.fea_store_price_avg,
     sp.fea_store_price_min,
@@ -193,7 +213,7 @@ combined_features AS (
     ip.fea_item_price_avg / NULLIF(dp.fea_dept_price_avg, 0) AS fea_item_vs_dept_price_ratio,
     ip.fea_item_price_avg / NULLIF(st.fea_state_price_avg, 0) AS fea_item_vs_state_price_ratio
 
-  FROM item_price_features ip
+  FROM item_store_price_features ip
   LEFT JOIN store_price_features sp
     ON ip.date_month = sp.date_month
     AND ip.store_id = sp.store_id
@@ -202,8 +222,10 @@ combined_features AS (
     AND ip.state_id = st.state_id
   LEFT JOIN dept_price_features dp
     ON ip.date_month = dp.date_month
-    AND ip.store_id = dp.store_id
     AND ip.dept_id = dp.dept_id
+  LEFT JOIN item_price_features dp
+    ON ip.date_month = dp.date_month
+    AND ip.item_id = dp.item_id
   LEFT JOIN price_change_features pc
     ON ip.date_month = pc.date_month
     AND ip.store_id = pc.store_id
@@ -259,26 +281,36 @@ SELECT
   fea_item_vs_state_price_ratio,
   
   -- Rolling average features for item prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgNoPartition("fea_item_price_avg")},
-  ${window_functions.generateRollAvgNoPartition("fea_item_price_min")},
-  ${window_functions.generateRollAvgNoPartition("fea_item_price_max")},
-  ${window_functions.generateRollAvgNoPartition("fea_item_price_std")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_min", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_max", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_std", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_avg", partitionBy="ctx_item_id")},
   
+  -- Rolling average features for item store prices (3, 6, 12 months)
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_min", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_max", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_std", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_avg", partitionBy="ctx_item_id, ctx_store_id")},
+
   -- Rolling average features for store prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgNoPartition("fea_store_price_avg")},
-  ${window_functions.generateRollAvgNoPartition("fea_store_price_std")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_avg", partitionBy="ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_std", partitionBy="ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_unique_items", partitionBy="ctx_store_id")},
   
   -- Rolling average features for department prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgNoPartition("fea_dept_price_avg")},
-  ${window_functions.generateRollAvgNoPartition("fea_dept_price_std")},
-  
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_avg", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_std", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_min", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_max", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_unique_items", partitionBy="ctx_dept_id")},
+
   -- Rolling average features for state prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgNoPartition("fea_state_price_avg")},
-  ${window_functions.generateRollAvgNoPartition("fea_state_price_std")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_avg", partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_std", partitionBy="ctx_state_id")},
   
   -- Rolling average features for relative prices (3, 6, 12 months)
-  ${window_functions.generateRollAvgNoPartition("fea_item_vs_store_price_ratio")},
-  ${window_functions.generateRollAvgNoPartition("fea_item_vs_dept_price_ratio")},
-  ${window_functions.generateRollAvgNoPartition("fea_item_vs_state_price_ratio")}
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_store_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_dept_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_state_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
 
 FROM combined_features

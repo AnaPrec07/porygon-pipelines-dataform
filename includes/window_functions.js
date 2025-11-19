@@ -7,7 +7,7 @@
  * @param {string} alias - Prefix for the generated column aliases (e.g., 'target_')
  * @returns {string} Formatted LEAD window functions
  */
-function generateLeadColumns(columnName, maxLead, partitionBy, orderBy, alias = 'lead_') {
+function generateLeadColumns(columnName, maxLead, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", alias = 'lead_') {
   const columns = [];
   for (let i = 1; i <= maxLead; i++) {
     columns.push(
@@ -20,21 +20,37 @@ function generateLeadColumns(columnName, maxLead, partitionBy, orderBy, alias = 
 /**
  * Alternative: Generate LAG window function
  */
-function generateLagColumns(columnName, maxLag, partitionBy, orderBy, hierarchy_name='', alias = 'lag_',) {
+function generateLagColumns(columnName, maxLag, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", alias = 'lag_',) {
   const columns = [];
   for (let i = 1; i <= maxLag; i++) {
     columns.push(
-      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${columnName}${hierarchy_name}_${alias}${i}_months`
+      `    LAG(${columnName}, ${i}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy}) AS ${columnName}_${alias}${i}_months`
     );
   }
   return columns.join(',\n');
 }
 
-function generateRollAvgNoPartition(columnName, alias = 'roll_avg_', windows = [3, 6, 12]) {
+function generateRollAvgSTDEVNoPartition(columnName, windows = [3, 6, 12]) {
   const columns = [];
   windows.forEach(i => {
     columns.push(
-      `    AVG(${columnName}) OVER (ORDER BY ctx_date_month ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_${alias}${i}_months`
+      `    AVG(${columnName}) OVER (ORDER BY ctx_date_month ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_avg_${i}_months`
+    );
+    columns.push(
+      `    STDDEV(${columnName}) OVER (ORDER BY ctx_date_month ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_std_${i}_months`
+    );
+  });
+  return columns.join(',\n');
+}
+
+function generateRollAvgSTDEVPartition(columnName, partitionBy="ctx_item_id, ctx_store_id", orderBy="ctx_date_month", windows = [3, 6, 12]) {
+  const columns = [];
+  windows.forEach(i => {
+    columns.push(
+      `    AVG(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_avg_${i}_months`
+    );
+    columns.push(
+      `    STDDEV(${columnName}) OVER (PARTITION BY ${partitionBy} ORDER BY ${orderBy} ROWS BETWEEN ${i} PRECEDING AND CURRENT ROW) AS ${columnName}_roll_std_${i}_months`
     );
   });
   return columns.join(',\n');
@@ -43,5 +59,6 @@ function generateRollAvgNoPartition(columnName, alias = 'roll_avg_', windows = [
 module.exports = {
   generateLeadColumns,
   generateLagColumns,
-  generateRollAvgNoPartition
+  generateRollAvgSTDEVNoPartition,
+  generateRollAvgSTDEVPartition
 };
