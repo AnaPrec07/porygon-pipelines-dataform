@@ -138,6 +138,7 @@ SELECT
     fea_item_vs_state_price_ratio_roll_avg_3_months,
     fea_item_vs_state_price_ratio_roll_avg_6_months,
     fea_item_vs_state_price_ratio_roll_avg_12_months,
+    fea_num_days_item_is_zero_sales,
     fea_num_days_item_is_zero_sales_roll_avg_3_months,
     fea_num_days_item_is_zero_sales_roll_avg_6_months,
     fea_num_days_item_is_zero_sales_roll_avg_12_months
