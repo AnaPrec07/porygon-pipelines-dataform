@@ -15,6 +15,6 @@ CREATE OR REPLACE EXTERNAL TABLE ${self()}
 )
 OPTIONS (
   format = 'CSV',
-  uris = ['https://storage.googleapis.com/m5_raw/sell_price.csv'],
+  uris = ['https://storage.googleapis.com/m5_raw/sell_prices.csv'],
   skip_leading_rows = 1
 );
