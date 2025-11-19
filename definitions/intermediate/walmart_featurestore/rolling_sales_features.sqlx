@@ -25,6 +25,7 @@ WITH cleanned_targets AS (
             ELSE tgt_monthly_sales
         END 
         AS tgt_monthly_sales,
+        tgt_days_is_zero_sales
         FROM ${ref("target_store_item_monthly")}
 ), item_sales AS (
   SELECT
