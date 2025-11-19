@@ -28,7 +28,7 @@ WITH price_with_date AS (
     -- Extract hierarchy from item_id (e.g., HOBBIES_1_001)
     SPLIT(p.item_id, '_')[OFFSET(0)] AS dept_id,
     SUBSTR(p.store_id, 1, 2) AS state_id
-  FROM ${ref("sell_price")}
+  FROM ${ref("sell_price")} p
   INNER JOIN ${ref("calendar")} c
     ON p.wm_yr_wk = c.wm_yr_wk
 ),
