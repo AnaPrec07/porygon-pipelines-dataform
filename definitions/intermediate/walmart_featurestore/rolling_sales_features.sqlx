@@ -91,7 +91,7 @@ LEFT JOIN item_across_state it_state
 ON it.ctx_date_month = it_state.ctx_date_month
 AND it.ctx_item_id = it_state.ctx_item_id
 AND it.ctx_state_id = it_state.ctx_state_id
-LEF JOIN item_total it_all
+LEFT JOIN item_total it_all
 ON it.ctx_date_month = it_sit_alltate.ctx_date_month
 AND it.ctx_item_id = it_all.ctx_item_id
 
