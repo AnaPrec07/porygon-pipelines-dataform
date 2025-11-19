@@ -27,6 +27,7 @@ SELECT
   it.ctx_item_id,
   it.ctx_store_id,
   it.fea_item_monthly_sales,
+  it.fea_num_days_item_is_zero_sales,
   ${window_functions.generateRollAvgNoPartition("fea_item_monthly_sales")},
   ${window_functions.generateRollAvgNoPartition("fea_num_days_item_is_zero_sales")}
 FROM item_sales it
