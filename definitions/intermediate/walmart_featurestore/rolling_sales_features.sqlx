@@ -74,7 +74,7 @@ SELECT
   -- Window functions for item store level
   ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
   ${window_functions.generateLagColumns("fea_item_monthly_sales", 4)},
-  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")}
+  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")},
   ${window_functions.generateLagColumns("fea_num_days_item_is_zero_sales", 4)},
 
   -- Window functions for item state level
