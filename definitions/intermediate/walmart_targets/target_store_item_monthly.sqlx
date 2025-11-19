@@ -84,7 +84,8 @@ dept_item_monthly_sales AS (
         ctx_cat_id,
         ctx_dept_id,
         ctx_item_id,
-        SUM(tgt_daily_sales) AS tgt_monthly_sales
+        SUM(tgt_daily_sales) AS tgt_monthly_sales,
+        CASE WHEN daily_sales.daily_sales = 0 THEN 1 ELSE 0 END AS is_zero_sales,
     FROM dept_item_daily_sales_with_calendar_dates
     GROUP BY 
         DATE_TRUNC(ctx_date, MONTH),
@@ -102,8 +103,15 @@ SELECT
     ctx_dept_id,
     ctx_item_id,
     tgt_monthly_sales,
+    fea_days_is_zero_sales,
     ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
+    4, 
+    "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
+    "ctx_date_month"
+    )}
+    ${window_functions.generateLeadColumns(
+    "fea_days_is_zero_sales", 
     4, 
     "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
     "ctx_date_month"
