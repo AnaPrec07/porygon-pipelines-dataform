@@ -47,7 +47,7 @@ item_across_state AS (
   GROUP BY 
     it.ctx_date_month,
     it.ctx_item_id,
-    it.ctx_state_id,
+    it.ctx_state_id
 ),
 item_total AS (
   SELECT 
