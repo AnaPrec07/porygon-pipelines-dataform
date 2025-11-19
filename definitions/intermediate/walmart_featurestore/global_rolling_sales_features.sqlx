@@ -13,8 +13,21 @@ config {
   }
 }
 
-
-WITH base_features AS (
+WITH cleanned_targets AS (
+    SELECT 
+        ctx_date_month,
+        ctx_state_id,
+        ctx_cat_id,
+        ctx_dept_id,
+        ctx_store_id,
+        CASE 
+            WHEN tgt_days_is_zero_sales >= 20
+            THEN NULL
+            ELSE tgt_monthly_sales
+        END 
+        AS tgt_monthly_sales,
+        FROM ${ref("target_store_item_monthly")}
+), base_features AS (
   SELECT 
     ctx_date_month,
     -- State level features
@@ -44,7 +57,7 @@ WITH base_features AS (
     SUM(IF(ctx_store_id = 'WI_1', tgt_monthly_sales, 0)) AS fea_wi_1_monthly_sales,
     SUM(IF(ctx_store_id = 'WI_2', tgt_monthly_sales, 0)) AS fea_wi_2_monthly_sales,
     SUM(IF(ctx_store_id = 'WI_3', tgt_monthly_sales, 0)) AS fea_wi_3_monthly_sales
-  FROM ${ref("target_store_item_monthly")}
+  FROM cleanned_targets
   GROUP BY ctx_date_month
 )
 SELECT
