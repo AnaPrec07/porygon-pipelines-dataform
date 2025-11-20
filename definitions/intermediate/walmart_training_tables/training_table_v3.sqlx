@@ -387,7 +387,11 @@ SELECT
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
     fea_all_item_monthly_sales_roll_std_12_months
-FROM ${ref("target_store_item_monthly")} tgt 
+FROM ${ref("target_store_item_monthly")} tgt
+JOIN ${ref("stockout_filter")} sf
+    ON sf.ctx_date_month = tgt.ctx_date_month
+    AND sf.ctx_item_id = tgt.ctx_item_id
+    AND sf.ctx_store_id = tgt.ctx_store_id
 LEFT JOIN ${ref("calendar_features")} cal
     ON cal.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("global_rolling_sales_features")} glob_feas
