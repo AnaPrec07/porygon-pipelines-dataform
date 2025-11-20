@@ -386,7 +386,7 @@ SELECT
     fea_all_item_monthly_sales_roll_avg_12_months,
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
-    fea_all_item_monthly_sales_roll_std_12_months
+    fea_all_item_monthly_sales_roll_std_12_months,
     fea_state_id_encoded,
     fea_cat_id_encoded,
     fea_dept_id_encoded,
