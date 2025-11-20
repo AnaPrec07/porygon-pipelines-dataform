@@ -35,9 +35,9 @@ SELECT
   ctx_item_id, 
   ctx_store_id, 
   ctx_date_month, 
-  1 AS is_potential_stockout
+  1 AS is_not_potential_stockout
 FROM potential_stockouts
-WHERE is_zero_in_month = 1
-  OR is_zero_lag_month = 1
-  OR is_zero_lead_month = 1
+WHERE is_zero_in_month = 0
+  OR is_zero_lag_month = 0
+  OR is_zero_lead_month = 0
 ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
