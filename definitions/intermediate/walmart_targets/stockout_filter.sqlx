@@ -1,0 +1,43 @@
+config {
+  type: "table",
+  schema: "walmart_targets",
+  description: "Stockout filter identifying potential stockout periods.",
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: [
+        "ctx_item_id",
+        "ctx_store_id",
+        "ctx_date_month",
+        "is_potential_stockout"
+    ],
+    uniqueKey: [
+        "ctx_item_id",
+        "ctx_store_id",
+        "ctx_date_month"
+    ]
+  }
+}
+
+WITH potential_stockouts AS (
+  SELECT 
+    ctx_item_id, 
+    ctx_store_id, 
+    ctx_date_month,
+    ctx_cat_id, 
+    ctx_dept_id,
+    tgt_monthly_sales,
+    CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END AS is_zero_in_month,
+    LAG(CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_zero_lag_month,
+    LEAD(CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_zero_lead_month
+  FROM ${ref("target_store_item_monthly")}
+)
+SELECT 
+  ctx_item_id, 
+  ctx_store_id, 
+  ctx_date_month, 
+  1 AS is_potential_stockout
+FROM potential_stockouts
+WHERE is_zero_in_month = 1
+  OR is_zero_lag_month = 1
+  OR is_zero_lead_month = 1
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month
