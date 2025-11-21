@@ -13,7 +13,15 @@ config {
   }
 }
 
-
+WITH economic_indicators AS (
+    SELECT 
+        PARSE_DATE('%m/%d/%y', observation_date) AS ctx_date_month,
+        fea_wi_unemployment_rate,
+        fea_tx_unemployment_rate,
+        fea_ca_unemployment_rate,
+        fea_gas_price_per_gallon,
+    FROM ${ref("economic_features")}
+)
 SELECT 
     ctx_date_month,
     fea_wi_unemployment_rate,
@@ -24,4 +32,4 @@ SELECT
     ${window_functions.generateRollAvgSTDEVNoPartition("fea_tx_unemployment_rate")},
     ${window_functions.generateRollAvgSTDEVNoPartition("fea_ca_unemployment_rate")},
     ${window_functions.generateRollAvgSTDEVNoPartition("fea_gas_price_per_gallon")},
-FROM ${ref("economic_features")}
+FROM economic_indicators
