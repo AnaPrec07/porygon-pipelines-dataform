@@ -8,7 +8,7 @@ config {
 
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
 (
-  observation_date DATE,
+  observation_date STRING,
   fea_wi_unemployment_rate FLOAT64,
   fea_tx_unemployment_rate FLOAT64,
   fea_ca_unemployment_rate FLOAT64,
