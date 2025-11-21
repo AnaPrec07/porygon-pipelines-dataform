@@ -205,7 +205,7 @@ monthly_weather AS (
 )
 SELECT 
   date AS ctx_date_month,
-  state AS ctx_sate_id,
+  state AS ctx_state_id,
   mean_temperature AS fea_mean_temperature,
   mean_dewp AS fea_mean_dewp,
   mean_visib AS fea_mean_visib,
