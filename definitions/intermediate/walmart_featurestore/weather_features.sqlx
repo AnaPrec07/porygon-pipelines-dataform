@@ -1,3 +1,21 @@
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Weather features.",
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_state_id"
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_state_id"
+    ],
+  }
+}
+
+
 WITH all_gsdo AS (
   SELECT
       stn AS station_id,
