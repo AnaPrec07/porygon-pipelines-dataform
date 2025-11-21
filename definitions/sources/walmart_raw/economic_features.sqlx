@@ -9,10 +9,10 @@ config {
 CREATE OR REPLACE EXTERNAL TABLE ${self()}
 (
   observation_date DATE,
-  fea_wi_unemployment_rate INTEGER,
-  fea_tx_unemployment_rate INTEGER,
-  fea_ca_unemployment_rate INTEGER,
-  fea_gas_price_per_gallon INTEGER,
+  fea_wi_unemployment_rate FLOAT64,
+  fea_tx_unemployment_rate FLOAT64,
+  fea_ca_unemployment_rate FLOAT64,
+  fea_gas_price_per_gallon FLOAT64,
 )
 OPTIONS (
   format = 'CSV',
