@@ -1,0 +1,302 @@
+WITH all_gsdo AS (
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2010`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2011`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2012`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2013`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2014`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2015`
+  UNION ALL 
+  SELECT
+      stn AS station_id,
+      DATE(CONCAT(year,'-', mo, '-01')) AS date,
+      temp,
+      wdsp,
+      tornado_funnel_cloud,
+      thunder,
+      snow_ice_pellets,
+      rain_drizzle,
+      fog,
+      sndp,
+      prcp,
+      gust,
+      visib,
+      dewp,
+  FROM
+      `bigquery-public-data.noaa_gsod.gsod2016`
+),
+joined_df AS (
+  SELECT
+    all_g.date,
+    CASE 
+      WHEN all_g.temp = 9999.9 THEN NULL
+      ELSE all_g.temp
+    END AS mean_temperature,
+    CASE 
+      WHEN all_g.dewp = 9999.9 THEN NULL
+      ELSE all_g.dewp
+    END AS mean_dewp,
+    CASE 
+      WHEN all_g.visib = 999.9 THEN NULL
+      ELSE all_g.visib
+    END AS mean_visib,
+    CASE 
+      WHEN all_g.wdsp = "999.9" THEN NULL
+      ELSE CAST(all_g.wdsp AS FLOAT64)
+    END AS mean_wdsp,
+    CASE 
+      WHEN all_g.prcp = 999.9 THEN NULL
+      ELSE all_g.prcp
+    END AS mean_prcp,
+    CASE 
+      WHEN all_g.sndp = 999.9 THEN NULL
+      ELSE all_g.sndp
+    END AS mean_sndp,
+    CAST(tornado_funnel_cloud AS INT64) AS tornado_funnel_cloud,
+    CAST(thunder AS INT64) AS thunder,
+    CAST(snow_ice_pellets AS INT64) AS snow_ice_pellets,
+    CAST(rain_drizzle AS INT64) AS rain_drizzle,
+    CAST(fog AS INT64) AS fog,
+    st.state
+  FROM all_gsdo all_g
+  JOIN `bigquery-public-data.noaa_gsod.stations` st
+  ON all_g.station_id = st.usaf
+  WHERE
+    country = "US"
+    AND state IN ("CA", "TX", "WI")
+),
+monthly_weather AS (
+  SELECT 
+    date,
+    state,
+    AVG(mean_temperature) AS mean_temperature,
+    AVG(mean_dewp) AS mean_dewp,
+    AVG(mean_visib) AS mean_visib,
+    AVG(mean_wdsp) AS mean_wdsp,
+    AVG(mean_prcp) AS mean_prcp,
+    AVG(mean_sndp) AS mean_sndp,
+    SUM(tornado_funnel_cloud) AS tornado_funnel_cloud,
+    SUM(thunder) AS thunder,
+    SUM(snow_ice_pellets) AS snow_ice_pellets,
+    SUM(rain_drizzle) AS rain_drizzle,
+    SUM(fog) AS fog,
+  FROM joined_df
+  GROUP BY 
+  date,
+  state
+)
+SELECT 
+  date AS ctx_date_month,
+  state AS ctx_sate_id,
+  mean_temperature AS fea_mean_temperature,
+  mean_dewp AS fea_mean_dewp,
+  mean_visib AS fea_mean_visib,
+  mean_wdsp AS fea_mean_wdsp,
+  mean_prcp AS fea_mean_prcp,
+  tornado_funnel_cloud AS fea_tornado_funnel_cloud,
+  thunder AS fea_thunder,
+  snow_ice_pellets AS fea_snow_ice_pellets,
+  rain_drizzle AS fea_rain_drizzle,
+  fog AS fea_fog,
+  AVG(mean_temperature) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_temprerature_roll_3,
+  AVG(mean_temperature) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_temprerature_roll_6,
+  AVG(mean_temperature) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_temprerature_roll_12,
+  AVG(mean_dewp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_dewp_roll_3,
+  AVG(mean_dewp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_dewp_roll_6,
+  AVG(mean_dewp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_dewp_roll_12,
+  AVG(mean_visib) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_visib_roll_3,
+  AVG(mean_visib) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_visib_roll_6,
+  AVG(mean_visib) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_visib_roll_12,
+  AVG(mean_wdsp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_wdsp_roll_6,
+  AVG(mean_wdsp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_wdsp_roll_12,
+  AVG(mean_prcp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_prcp_roll_6,
+  AVG(mean_prcp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_prcp_roll_12,
+  AVG(mean_sndp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_sndp_roll_6,
+  AVG(mean_sndp) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_sndp_roll_12,
+  AVG(tornado_funnel_cloud) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_tornado_funnel_cloud_roll_6,
+  AVG(tornado_funnel_cloud) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_tornado_funnel_cloud_roll_12,
+  AVG(thunder) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_thunder_roll_6,
+  AVG(thunder) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_thunder_roll_12,
+  AVG(snow_ice_pellets) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_snow_ice_pellets_roll_6,
+  AVG(snow_ice_pellets) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_snow_ice_pellets_roll_12,
+  AVG(rain_drizzle) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_rain_drizzle_roll_6,
+  AVG(rain_drizzle) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_rain_drizzle_roll_12,
+  AVG(fog) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_fog_roll_6,
+  AVG(fog) OVER (
+    PARTITION BY state ORDER BY date
+    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
+  ) AS fea_mean_fog_roll_12,
+FROM monthly_weather
+
