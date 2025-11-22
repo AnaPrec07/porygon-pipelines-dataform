@@ -20,12 +20,7 @@ WITH cleanned_targets AS (
         ctx_store_id,
         ctx_item_id,
         ctx_state_id,
-        CASE 
-            WHEN tgt_days_is_zero_sales >= 20
-            THEN NULL
-            ELSE tgt_monthly_sales
-        END 
-        AS tgt_monthly_sales,
+        tgt_monthly_sales,
         tgt_days_is_zero_sales
         FROM ${ref("target_store_item_monthly")}
 ), item_sales AS (
