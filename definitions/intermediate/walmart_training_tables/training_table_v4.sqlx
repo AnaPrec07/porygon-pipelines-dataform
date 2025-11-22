@@ -397,7 +397,6 @@ SELECT
     fea_mean_visib, 
     fea_mean_wdsp,
     fea_mean_prcp,
-    fea_mean_sndp, 
     fea_mean_temprerature_roll_3, 
     fea_mean_temprerature_roll_6, 
     fea_mean_temprerature_roll_12, 
