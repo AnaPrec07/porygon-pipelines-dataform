@@ -106,7 +106,6 @@ SELECT
     tgt_monthly_sales,
     tgt_days_is_zero_sales,
     SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS tgt_monthly_sales_sum_3_next_months,
-    SUM(is_not_potential_stockout) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_not_potential_stockout_sum_3_next_months,
     ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
     4, 
@@ -119,8 +118,4 @@ SELECT
     "ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id",
     "ctx_date_month"
     )}
-FROM dept_item_monthly_sales dept
-LEFT JOIN ${ref("stockout_filter")} stk
-ON dept.ctx_item_id = stk.ctx_item_id
-AND dept.ctx_store_id = stk.ctx_store_id
-AND dept.ctx_date_month = stk.ctx_date_month
+FROM dept_item_monthly_sales
