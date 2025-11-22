@@ -29,8 +29,8 @@ WITH potential_stockouts AS (
     CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END AS is_zero_in_month,
     LAG(CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_zero_lag_month,
     LEAD(CASE WHEN tgt_monthly_sales = 0 THEN 1 ELSE 0 END, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_zero_lead_month,
-    ABS(tgt_days_is_zero_sales - tgt_days_is_zero_sales_lead_1_months) days_is_zero_diff
-    ABS(tgt_days_is_zero_sales_lead_1_months - tgt_days_is_zero_sales_lead_2_months) days_is_zero_1_lead_diff
+    ABS(tgt_days_is_zero_sales - tgt_days_is_zero_sales_lead_1_months) days_is_zero_diff,
+    ABS(tgt_days_is_zero_sales_lead_1_months - tgt_days_is_zero_sales_lead_2_months) days_is_zero_1_lead_diff,
     ABS(tgt_days_is_zero_sales_lead_2_months - tgt_days_is_zero_sales_lead_3_months) days_is_zero_2_lead_diff
   FROM ${ref("target_store_item_monthly")}
 )
