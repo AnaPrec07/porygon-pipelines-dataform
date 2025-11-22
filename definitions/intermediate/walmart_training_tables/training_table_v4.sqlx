@@ -502,7 +502,7 @@ LEFT JOIN ${ref("weather_features")} wea_feas
     ON wea_feas.ctx_state_id = tgt.ctx_state_id
     AND wea_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("population_features")} pop_feas
-    ON wea_feas.ctx_state_id = tgt.ctx_state_id
+    ON pop_feas.ctx_state_id = tgt.ctx_state_id
     AND ctx_date_year = EXTRACT(YEAR FROM tgt.ctx_date_month)
 LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
