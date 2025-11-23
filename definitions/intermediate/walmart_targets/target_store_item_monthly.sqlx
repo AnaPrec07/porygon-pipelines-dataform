@@ -110,11 +110,11 @@ SELECT
     SAFE_DIVIDE(
       (
         (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)) 
-        - (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEEDING))
+        - (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEDING))
       ), 
-      (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEEDING))
+      (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEDING))
     ) AS tgt_avg_change_3_prior_3_next_months,
-    (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEEDING)) AS tgt_ctx_prior_3_months_sum,
+    (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEDING)) AS tgt_ctx_prior_3_months_sum,
     ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
     4, 
