@@ -107,6 +107,13 @@ SELECT
     tgt_days_is_zero_sales,
     SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS tgt_monthly_sales_sum_3_next_months,
     SAFE_DIVIDE(((SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)/3) - tgt_monthly_sales), tgt_monthly_sales) AS tgt_avg_change_3_next_months,
+    SAFE_DIVIDE(
+      (
+        (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)/3) 
+        - (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEEDING)/3)
+      ), 
+      (SUM(tgt_monthly_sales) OVER (PARTITION BY ctx_state_id, ctx_store_id, ctx_cat_id, ctx_dept_id, ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN CURRENT ROW AND 2 PRECEEDING)/3)
+    ) AS tgt_avg_change_3_prior_3_next_months,
     ${window_functions.generateLeadColumns(
     "tgt_monthly_sales", 
     4, 
