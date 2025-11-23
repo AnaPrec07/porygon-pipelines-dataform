@@ -346,7 +346,12 @@ SELECT
     fea_hobbies_monthly_sales_delta_roll_avg_12_months,
     fea_hobbies_monthly_sales_delta_roll_std_12_months,
     fea_household_monthly_sales_delta_roll_avg_3_months,
-    fea_household_monthly_sales_delta_roll_std_3_months
+    fea_household_monthly_sales_delta_roll_std_3_months,
+    fea_item_monthly_sales,
+    fea_num_days_item_is_zero_sales,
+    fea_item_monthly_sales_roll_avg_3_months,
+    fea_item_monthly_sales_percent_change,
+    fea_num_days_item_is_zero_percent_change,
 FROM ${ref("target_store_item_monthly")} tgt
 JOIN `porygon-pipelines.walmart_targets.new_stockout_filter` sf
     ON sf.ctx_date_month = tgt.ctx_date_month
@@ -372,5 +377,9 @@ LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("rolling_percent_error")} percent_feas
     ON percent_feas.ctx_date_month = tgt.ctx_date_month
+LEFT JOIN ${ref("rolling_sales_features")} roll_feas
+    ON roll_feas.ctx_date_month = tgt.ctx_date_month
+    AND roll_feas.ctx_item_id = tgt.ctx_item_id
+    AND roll_feas.ctx_store_id = tgt.ctx_store_id
 
 
