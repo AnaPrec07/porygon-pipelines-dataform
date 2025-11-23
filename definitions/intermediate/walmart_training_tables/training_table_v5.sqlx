@@ -42,6 +42,8 @@ SELECT
     tgt_days_is_zero_sales_lead_4_months,
     tgt_monthly_sales_sum_3_next_months,
     tgt_avg_change_3_next_months,
+    tgt_avg_change_3_prior_3_next_months,
+    tgt_ctx_prior_3_months_sum,
     fea_is_weekend,
     fea_is_event_1,
     fea_is_event_2,
@@ -477,7 +479,9 @@ SELECT
     fea_gas_price_per_gallon_roll_avg_6_months,
     fea_gas_price_per_gallon_roll_std_6_months,
     fea_gas_price_per_gallon_roll_avg_12_months,
-    fea_gas_price_per_gallon_roll_std_12_months
+    fea_gas_price_per_gallon_roll_std_12_months,
+    fea_item_monthly_sales_percent_change,
+    fea_num_days_item_is_zero_percent_change,
 FROM ${ref("target_store_item_monthly")} tgt
 JOIN `porygon-pipelines.walmart_targets.new_stockout_filter` sf
     ON sf.ctx_date_month = tgt.ctx_date_month
