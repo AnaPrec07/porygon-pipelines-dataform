@@ -298,8 +298,6 @@ SELECT
     fea_gas_price_per_gallon_roll_std_6_months,
     fea_gas_price_per_gallon_roll_avg_12_months,
     fea_gas_price_per_gallon_roll_std_12_months,
-    fea_item_monthly_sales_percent_change,
-    fea_num_days_item_is_zero_percent_change,
     fea_ca_monthly_sales_delta,
     fea_tx_monthly_sales_delta,
     fea_wi_monthly_sales_delta,
