@@ -373,6 +373,6 @@ LEFT JOIN ${ref("population_features")} pop_feas
 LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("rolling_percent_error")} percent_feas
-    ON percent_feas.ctx_date_month = tgt.percent_feas
+    ON percent_feas.ctx_date_month = tgt.ctx_date_month
 
 
