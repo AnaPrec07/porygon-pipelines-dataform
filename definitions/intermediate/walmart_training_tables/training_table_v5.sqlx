@@ -41,6 +41,7 @@ SELECT
     tgt_days_is_zero_sales_lead_3_months,
     tgt_days_is_zero_sales_lead_4_months,
     tgt_monthly_sales_sum_3_next_months,
+    tgt_avg_change_3_next_months,
     fea_is_weekend,
     fea_is_event_1,
     fea_is_event_2,
