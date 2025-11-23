@@ -63,4 +63,5 @@ SELECT
 FROM intermediate_aggregations
 GROUP BY 
     ctx_date_month, 
-    fea_month_sin
+    fea_month_sin,
+    fea_detrender
