@@ -20,6 +20,7 @@ WITH intermediate_aggregations AS (
     CAST(event_name_1 IS NOT NULL AS INT64) AS is_event_1,
     CAST(event_name_2 IS NOT NULL AS INT64) AS is_event_2,
     SIN(2 * ACOS(-1) * EXTRACT(MONTH FROM date) / 12) AS fea_month_sin,
+    SPLIT(d, '_')[OFFSET(1)] AS fea_detrender,
     CASE 
       WHEN event_type_1 = "Sporting" OR event_type_1 = "Sporting"
         THEN 1
@@ -57,7 +58,8 @@ SELECT
   SUM(snap_CA) AS fea_is_snap_ca,
   SUM(snap_TX) AS fea_is_snap_tx,
   SUM(snap_WI) AS fea_is_snap_wi,
-  fea_month_sin
+  fea_month_sin,
+  fea_detrender
 FROM intermediate_aggregations
 GROUP BY 
     ctx_date_month, 
