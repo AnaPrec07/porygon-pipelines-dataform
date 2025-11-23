@@ -59,9 +59,8 @@ SELECT
   SUM(snap_TX) AS fea_is_snap_tx,
   SUM(snap_WI) AS fea_is_snap_wi,
   fea_month_sin,
-  fea_detrender
+  MAX(fea_detrender) AS fea_detrender
 FROM intermediate_aggregations
 GROUP BY 
     ctx_date_month, 
-    fea_month_sin,
-    fea_detrender
+    fea_month_sin
