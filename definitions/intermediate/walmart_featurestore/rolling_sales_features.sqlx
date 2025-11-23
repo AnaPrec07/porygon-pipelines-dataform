@@ -15,14 +15,14 @@ config {
 
 
 WITH cleanned_targets AS (
-    SELECT 
-        ctx_date_month,
-        ctx_store_id,
-        ctx_item_id,
-        ctx_state_id,
-        tgt_monthly_sales,
-        tgt_days_is_zero_sales
-        FROM ${ref("target_store_item_monthly")}
+  SELECT 
+    ctx_date_month,
+    ctx_store_id,
+    ctx_item_id,
+    ctx_state_id,
+    tgt_monthly_sales,
+    tgt_days_is_zero_sales
+    FROM ${ref("target_store_item_monthly")}
 ), item_sales AS (
   SELECT
   ctx_item_id,
@@ -111,6 +111,7 @@ SELECT
   it.fea_item_monthly_sales_lag_2_months,
   it.fea_item_monthly_sales_lag_3_months,
   it.fea_item_monthly_sales_lag_4_months,
+  SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
   it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
   it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
   it.fea_num_days_item_is_zero_sales_roll_avg_12_months,
@@ -118,6 +119,7 @@ SELECT
   it.fea_num_days_item_is_zero_sales_roll_std_6_months,
   it.fea_num_days_item_is_zero_sales_roll_std_12_months,
   it.fea_num_days_item_is_zero_sales_lag_1_months,
+  SAFE_DIVIDE(it.fea_num_days_item_is_zero_sales - it.fea_num_days_item_is_zero_sales_lag_1_months, it.fea_num_days_item_is_zero_sales_lag_1_months) AS fea_num_days_item_is_zero_percent_change,
   it.fea_num_days_item_is_zero_sales_lag_2_months,
   it.fea_num_days_item_is_zero_sales_lag_3_months,
   it.fea_num_days_item_is_zero_sales_lag_4_months,
