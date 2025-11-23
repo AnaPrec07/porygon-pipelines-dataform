@@ -532,6 +532,7 @@ SELECT
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
     fea_all_item_monthly_sales_roll_std_12_months,
+    fea_detrender
 FROM ${ref("target_store_item_monthly")} tgt
 JOIN `porygon-pipelines.walmart_targets.new_stockout_filter` sf
     ON sf.ctx_date_month = tgt.ctx_date_month
