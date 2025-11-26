@@ -23,16 +23,24 @@ WITH cleanned_targets AS (
     tgt_monthly_sales,
     tgt_days_is_zero_sales
     FROM ${ref("target_store_item_monthly")}
+    JOIN `porygon-pipelines.walmart_targets.new_stockout_filter_v3` sf
+      ON sf.ctx_date_month = tgt.ctx_date_month
+      AND sf.ctx_item_id = tgt.ctx_item_id
+      AND sf.ctx_store_id = tgt.ctx_store_id
+    JOIN `porygon-pipelines.walmart_targets.target_outliers_filter` tf
+      ON tf.ctx_date_month = tgt.ctx_date_month
+      AND tf.ctx_item_id = tgt.ctx_item_id
+      AND tf.ctx_store_id = tgt.ctx_store_id
 ), item_sales AS (
   SELECT
   ctx_item_id,
   ctx_store_id,
   ctx_state_id,
   src.ctx_date_month,
-  CASE WHEN tgt_monthly_sales =0 THEN NULL ELSE tgt_monthly_sales
-  END AS fea_item_monthly_sales,
+  tgt_monthly_sales fea_item_monthly_sales,
   tgt_days_is_zero_sales AS fea_num_days_item_is_zero_sales
   FROM cleanned_targets src
+
 ),
 item_sales_ts AS (
   SELECT
