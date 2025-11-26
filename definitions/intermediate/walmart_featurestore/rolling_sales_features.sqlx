@@ -16,22 +16,31 @@ config {
 
 WITH cleanned_targets AS (
   SELECT 
-    ctx_date_month,
-    ctx_store_id,
-    ctx_item_id,
-    ctx_state_id,
-    tgt_monthly_sales,
-    tgt_days_is_zero_sales
-    FROM ${ref("target_store_item_monthly")}
+    tgt.ctx_date_month,
+    tgt.ctx_store_id,
+    tgt.ctx_item_id,
+    tgt.ctx_state_id,
+    tgt.tgt_monthly_sales,
+    tgt.tgt_days_is_zero_sales
+    FROM ${ref("target_store_item_monthly")} tgt
+    JOIN `porygon-pipelines.walmart_targets.new_stockout_filter_v3` sf
+      ON sf.ctx_date_month = tgt.ctx_date_month
+      AND sf.ctx_item_id = tgt.ctx_item_id
+      AND sf.ctx_store_id = tgt.ctx_store_id
+    JOIN `porygon-pipelines.walmart_targets.target_outliers_filter` tf
+      ON tf.ctx_date_month = tgt.ctx_date_month
+      AND tf.ctx_item_id = tgt.ctx_item_id
+      AND tf.ctx_store_id = tgt.ctx_store_id
 ), item_sales AS (
   SELECT
   ctx_item_id,
   ctx_store_id,
   ctx_state_id,
   src.ctx_date_month,
-  tgt_monthly_sales AS fea_item_monthly_sales,
+  tgt_monthly_sales fea_item_monthly_sales,
   tgt_days_is_zero_sales AS fea_num_days_item_is_zero_sales
   FROM cleanned_targets src
+
 ),
 item_sales_ts AS (
   SELECT
@@ -42,9 +51,9 @@ item_sales_ts AS (
   fea_item_monthly_sales,
   fea_num_days_item_is_zero_sales,
   -- Window functions for item store level
-  ${window_functions.generateRollMedianSTDEVPartition("fea_item_monthly_sales")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_monthly_sales")},
   ${window_functions.generateLagColumns("fea_item_monthly_sales", 4)},
-  ${window_functions.generateRollMedianSTDEVPartition("fea_num_days_item_is_zero_sales")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_num_days_item_is_zero_sales")},
   ${window_functions.generateLagColumns("fea_num_days_item_is_zero_sales", 4)},
   FROM item_sales
 ),
@@ -69,8 +78,8 @@ item_across_state_ts AS (
     fea_state_item_monthly_sales,
     fea_state_item_num_days_is_zero_sales,
     -- Window functions for item state level
-    ${window_functions.generateRollMedianSTDEVPartition("fea_state_item_monthly_sales", partitionBy="ctx_item_id, ctx_state_id")},
-    ${window_functions.generateRollMedianSTDEVPartition("fea_state_item_num_days_is_zero_sales", partitionBy="ctx_item_id, ctx_state_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_monthly_sales", partitionBy="ctx_item_id, ctx_state_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_state_item_num_days_is_zero_sales", partitionBy="ctx_item_id, ctx_state_id")},
   FROM item_across_state it
 ),
 item_total AS (
@@ -91,8 +100,8 @@ item_total_ts AS (
     fea_all_item_monthly_sales,
     fea_all_item_num_days_is_zero_sales,
     -- Window functions for item level
-    ${window_functions.generateRollMedianSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
-    ${window_functions.generateRollMedianSTDEVPartition("fea_all_item_num_days_is_zero_sales", partitionBy="ctx_item_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
+    ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_num_days_is_zero_sales", partitionBy="ctx_item_id")},
   FROM item_total it
 )
 SELECT 
@@ -101,9 +110,9 @@ SELECT
   it.ctx_store_id,
   it.fea_item_monthly_sales,
   it.fea_num_days_item_is_zero_sales,
-  it.fea_item_monthly_sales_roll_median_3_months,
-  it.fea_item_monthly_sales_roll_median_6_months,
-  it.fea_item_monthly_sales_roll_median_12_months,
+  it.fea_item_monthly_sales_roll_avg_3_months,
+  it.fea_item_monthly_sales_roll_avg_6_months,
+  it.fea_item_monthly_sales_roll_avg_12_months,
   it.fea_item_monthly_sales_roll_std_3_months,
   it.fea_item_monthly_sales_roll_std_6_months,
   it.fea_item_monthly_sales_roll_std_12_months,
@@ -112,9 +121,9 @@ SELECT
   it.fea_item_monthly_sales_lag_3_months,
   it.fea_item_monthly_sales_lag_4_months,
   SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
-  it.fea_num_days_item_is_zero_sales_roll_median_3_months,
-  it.fea_num_days_item_is_zero_sales_roll_median_6_months,
-  it.fea_num_days_item_is_zero_sales_roll_median_12_months,
+  it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
+  it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
+  it.fea_num_days_item_is_zero_sales_roll_avg_12_months,
   it.fea_num_days_item_is_zero_sales_roll_std_3_months,
   it.fea_num_days_item_is_zero_sales_roll_std_6_months,
   it.fea_num_days_item_is_zero_sales_roll_std_12_months,
@@ -125,23 +134,23 @@ SELECT
   it.fea_num_days_item_is_zero_sales_lag_4_months,
   it_state_ts.fea_state_item_monthly_sales,
   fea_state_item_num_days_is_zero_sales,
-  fea_state_item_monthly_sales_roll_median_3_months,
-  fea_state_item_monthly_sales_roll_median_6_months,
-  fea_state_item_monthly_sales_roll_median_12_months,
+  fea_state_item_monthly_sales_roll_avg_3_months,
+  fea_state_item_monthly_sales_roll_avg_6_months,
+  fea_state_item_monthly_sales_roll_avg_12_months,
   fea_state_item_monthly_sales_roll_std_3_months,
   fea_state_item_monthly_sales_roll_std_6_months,
   fea_state_item_monthly_sales_roll_std_12_months,
-  fea_state_item_num_days_is_zero_sales_roll_median_3_months,
-  fea_state_item_num_days_is_zero_sales_roll_median_6_months,
-  fea_state_item_num_days_is_zero_sales_roll_median_12_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_3_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_6_months,
+  fea_state_item_num_days_is_zero_sales_roll_avg_12_months,
   fea_state_item_num_days_is_zero_sales_roll_std_3_months,
   fea_state_item_num_days_is_zero_sales_roll_std_6_months,
   fea_state_item_num_days_is_zero_sales_roll_std_12_months,
   it_all.fea_all_item_monthly_sales,
   it_all.fea_all_item_num_days_is_zero_sales,
-  fea_all_item_monthly_sales_roll_median_3_months,
-  fea_all_item_monthly_sales_roll_median_6_months,
-  fea_all_item_monthly_sales_roll_median_12_months,
+  fea_all_item_monthly_sales_roll_avg_3_months,
+  fea_all_item_monthly_sales_roll_avg_6_months,
+  fea_all_item_monthly_sales_roll_avg_12_months,
   fea_all_item_monthly_sales_roll_std_3_months,
   fea_all_item_monthly_sales_roll_std_6_months,
   fea_all_item_monthly_sales_roll_std_12_months,
