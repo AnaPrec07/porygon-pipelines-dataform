@@ -1,4 +1,21 @@
-
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Price features with time series rolling averages at multiple hierarchy levels.",
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_store_id",
+      "ctx_item_id"
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_store_id", 
+      "ctx_item_id"
+    ]
+  }
+}
 
 WITH price_with_date AS (
   SELECT
@@ -11,10 +28,11 @@ WITH price_with_date AS (
     -- Extract hierarchy from item_id (e.g., HOBBIES_1_001)
     SPLIT(p.item_id, '_')[OFFSET(0)] AS dept_id,
     SUBSTR(p.store_id, 1, 2) AS state_id
-  FROM `porygon-pipelines.walmart_raw.sell_price` p
-  INNER JOIN `porygon-pipelines.walmart_raw.calendar` c
+  FROM ${ref("sell_price")} p
+  INNER JOIN ${ref("calendar")} c
     ON p.wm_yr_wk = c.wm_yr_wk
 ),
+
 
 -- Item-Store-level price features
 item_store_price_features AS (
@@ -248,141 +266,36 @@ SELECT
   fea_item_vs_state_price_ratio,
   
   -- Rolling average features for item prices (3, 6, 12 months)
-      AVG(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_avg_3_months,
-    STDDEV(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_std_3_months,
-    AVG(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_avg_6_months,
-    STDDEV(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_std_6_months,
-    AVG(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_avg_12_months,
-    STDDEV(fea_item_price_min) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_min_roll_std_12_months,
-      AVG(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_avg_3_months,
-    STDDEV(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_std_3_months,
-    AVG(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_avg_6_months,
-    STDDEV(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_std_6_months,
-    AVG(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_avg_12_months,
-    STDDEV(fea_item_price_max) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_max_roll_std_12_months,
-      AVG(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_avg_3_months,
-    STDDEV(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_std_3_months,
-    AVG(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_avg_6_months,
-    STDDEV(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_std_6_months,
-    AVG(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_avg_12_months,
-    STDDEV(fea_item_price_std) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_std_roll_std_12_months,
-      AVG(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_avg_3_months,
-    STDDEV(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_std_3_months,
-    AVG(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_avg_6_months,
-    STDDEV(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_std_6_months,
-    AVG(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_avg_12_months,
-    STDDEV(fea_item_price_avg) OVER (PARTITION BY ctx_item_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_price_avg_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_min", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_max", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_std", partitionBy="ctx_item_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_price_avg", partitionBy="ctx_item_id")},
   
   -- Rolling average features for item store prices (3, 6, 12 months)
-      AVG(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_avg_3_months,
-    STDDEV(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_std_3_months,
-    AVG(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_avg_6_months,
-    STDDEV(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_std_6_months,
-    AVG(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_avg_12_months,
-    STDDEV(fea_item_store_price_min) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_min_roll_std_12_months,
-      AVG(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_avg_3_months,
-    STDDEV(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_std_3_months,
-    AVG(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_avg_6_months,
-    STDDEV(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_std_6_months,
-    AVG(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_avg_12_months,
-    STDDEV(fea_item_store_price_max) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_max_roll_std_12_months,
-      AVG(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_avg_3_months,
-    STDDEV(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_std_3_months,
-    AVG(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_avg_6_months,
-    STDDEV(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_std_6_months,
-    AVG(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_avg_12_months,
-    STDDEV(fea_item_store_price_std) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_std_roll_std_12_months,
-      AVG(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_avg_3_months,
-    STDDEV(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_std_3_months,
-    AVG(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_avg_6_months,
-    STDDEV(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_std_6_months,
-    AVG(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_avg_12_months,
-    STDDEV(fea_item_store_price_avg) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_store_price_avg_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_min", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_max", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_std", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_store_price_avg", partitionBy="ctx_item_id, ctx_store_id")},
 
   -- Rolling average features for store prices (3, 6, 12 months)
-      AVG(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_avg_3_months,
-    STDDEV(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_std_3_months,
-    AVG(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_avg_6_months,
-    STDDEV(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_std_6_months,
-    AVG(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_avg_12_months,
-    STDDEV(fea_store_price_avg) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_price_avg_roll_std_12_months,
-      AVG(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_avg_3_months,
-    STDDEV(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_std_3_months,
-    AVG(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_avg_6_months,
-    STDDEV(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_std_6_months,
-    AVG(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_avg_12_months,
-    STDDEV(fea_store_price_std) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_price_std_roll_std_12_months,
-      AVG(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_avg_3_months,
-    STDDEV(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_std_3_months,
-    AVG(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_avg_6_months,
-    STDDEV(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_std_6_months,
-    AVG(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_avg_12_months,
-    STDDEV(fea_store_unique_items) OVER (PARTITION BY ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_store_unique_items_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_avg", partitionBy="ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_price_std", partitionBy="ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_store_unique_items", partitionBy="ctx_store_id")},
   
   -- Rolling average features for department prices (3, 6, 12 months)
-      AVG(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_avg_3_months,
-    STDDEV(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_std_3_months,
-    AVG(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_avg_6_months,
-    STDDEV(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_std_6_months,
-    AVG(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_avg_12_months,
-    STDDEV(fea_dept_price_avg) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_avg_roll_std_12_months,
-      AVG(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_avg_3_months,
-    STDDEV(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_std_3_months,
-    AVG(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_avg_6_months,
-    STDDEV(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_std_6_months,
-    AVG(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_avg_12_months,
-    STDDEV(fea_dept_price_std) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_std_roll_std_12_months,
-      AVG(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_avg_3_months,
-    STDDEV(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_std_3_months,
-    AVG(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_avg_6_months,
-    STDDEV(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_std_6_months,
-    AVG(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_avg_12_months,
-    STDDEV(fea_dept_price_min) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_min_roll_std_12_months,
-      AVG(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_avg_3_months,
-    STDDEV(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_std_3_months,
-    AVG(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_avg_6_months,
-    STDDEV(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_std_6_months,
-    AVG(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_avg_12_months,
-    STDDEV(fea_dept_price_max) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_price_max_roll_std_12_months,
-      AVG(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_avg_3_months,
-    STDDEV(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_std_3_months,
-    AVG(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_avg_6_months,
-    STDDEV(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_std_6_months,
-    AVG(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_avg_12_months,
-    STDDEV(fea_dept_unique_items) OVER (PARTITION BY ctx_dept_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_dept_unique_items_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_avg", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_std", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_min", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_price_max", partitionBy="ctx_dept_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_dept_unique_items", partitionBy="ctx_dept_id")},
 
   -- Rolling average features for state prices (3, 6, 12 months)
-      AVG(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_avg_3_months,
-    STDDEV(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_std_3_months,
-    AVG(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_avg_6_months,
-    STDDEV(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_std_6_months,
-    AVG(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_avg_12_months,
-    STDDEV(fea_state_price_avg) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_state_price_avg_roll_std_12_months,
-      AVG(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_avg_3_months,
-    STDDEV(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_std_3_months,
-    AVG(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_avg_6_months,
-    STDDEV(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_std_6_months,
-    AVG(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_avg_12_months,
-    STDDEV(fea_state_price_std) OVER (PARTITION BY ctx_state_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_state_price_std_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_avg", partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_state_price_std", partitionBy="ctx_state_id")},
   
   -- Rolling average features for relative prices (3, 6, 12 months)
-      AVG(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_avg_3_months,
-    STDDEV(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_std_3_months,
-    AVG(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_avg_6_months,
-    STDDEV(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_std_6_months,
-    AVG(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_avg_12_months,
-    STDDEV(fea_item_vs_store_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_store_price_ratio_roll_std_12_months,
-      AVG(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_avg_3_months,
-    STDDEV(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_std_3_months,
-    AVG(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_avg_6_months,
-    STDDEV(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_std_6_months,
-    AVG(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_avg_12_months,
-    STDDEV(fea_item_vs_dept_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_dept_price_ratio_roll_std_12_months,
-      AVG(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_avg_3_months,
-    STDDEV(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_std_3_months,
-    AVG(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_avg_6_months,
-    STDDEV(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_std_6_months,
-    AVG(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_avg_12_months,
-    STDDEV(fea_item_vs_state_price_ratio) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS fea_item_vs_state_price_ratio_roll_std_12_months,
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_store_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_dept_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
+  ${window_functions.generateRollAvgSTDEVPartition("fea_item_vs_state_price_ratio", partitionBy="ctx_item_id, ctx_store_id")},
 
 FROM combined_features
