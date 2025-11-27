@@ -23,11 +23,11 @@ WITH cleanned_targets AS (
     tgt.tgt_monthly_sales,
     tgt.tgt_days_is_zero_sales
     FROM ${ref("target_store_item_monthly")} tgt
-    JOIN `porygon-pipelines.walmart_targets.new_stockout_filter_v3` sf
+    JOIN ${ref("stockout_filter")} sf
       ON sf.ctx_date_month = tgt.ctx_date_month
       AND sf.ctx_item_id = tgt.ctx_item_id
       AND sf.ctx_store_id = tgt.ctx_store_id
-    JOIN `porygon-pipelines.walmart_targets.target_outliers_filter` tf
+    JOIN ${ref("target_outliers_filter")} tf
       ON tf.ctx_date_month = tgt.ctx_date_month
       AND tf.ctx_item_id = tgt.ctx_item_id
       AND tf.ctx_store_id = tgt.ctx_store_id
