@@ -17,7 +17,7 @@ WITH raw_sales AS (
     item_id
   FROM (
     SELECT *
-    FROM `porygon-pipelines.walmart_raw.sales_train_validation`
+    FROM ${ref("sales_train_validation")} 
     UNPIVOT (
       sales FOR day IN (
          ${schema_helpers.selectDayColumns(1, 1913, 'd_')})
@@ -35,5 +35,5 @@ SELECT
 cal.date AS ctx_date,
 raw.* 
 FROM raw_sales raw
-JOIN `porygon-pipelines.walmart_raw.calendar` cal
+JOIN ${ref("calendar")} cal
 ON cal.d = raw.day

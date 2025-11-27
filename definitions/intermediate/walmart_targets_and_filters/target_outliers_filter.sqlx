@@ -10,7 +10,7 @@ config {
 WITH targets_without_stockouts AS (
   SELECT tgt.*
   FROM ${ref("target_store_item_monthly")} tgt
-  JOIN ${ref("new_stockout_filter")} fv3
+  JOIN ${ref("stockout_filter")} fv3
   ON tgt.ctx_item_id = fv3.ctx_item_id
   AND tgt.ctx_date_month = fv3.ctx_date_month
   AND tgt.ctx_store_id = fv3.ctx_store_id

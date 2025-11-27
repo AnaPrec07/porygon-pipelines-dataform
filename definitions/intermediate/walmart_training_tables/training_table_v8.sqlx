@@ -512,7 +512,7 @@ CREATE OR REPLACE TABLE `porygon-pipelines.walmart_training_tables.training_tabl
         ctx_cat_id
     )
 FROM `porygon-pipelines.walmart_targets.target_store_item_monthly` tgt
-JOIN `porygon-pipelines.walmart_targets.new_stockout_filter_v3` sf
+JOIN ${ref("stockout_filter")} sf
     ON sf.ctx_date_month = tgt.ctx_date_month
     AND sf.ctx_item_id = tgt.ctx_item_id
     AND sf.ctx_store_id = tgt.ctx_store_id
