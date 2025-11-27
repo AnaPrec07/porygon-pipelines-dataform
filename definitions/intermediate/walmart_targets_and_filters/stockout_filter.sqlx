@@ -37,7 +37,7 @@ identify_stockouts AS (
     days.store_id AS ctx_store_id,
     CASE 
       WHEN 
-        fea_days_since_last_sale >= stockout_threshold_q90 
+        days_since_last_sale >= stockout_threshold_q90 
       THEN 1 
       ELSE 0 
     END AS is_stockout,
