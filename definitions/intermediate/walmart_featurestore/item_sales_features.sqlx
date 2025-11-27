@@ -36,6 +36,6 @@ SELECT *
 FROM PIVOT (
     ANY_VALUE(tgt_monthly_sales)
     FOR ctx_item_id IN (
-        getWalmartFeatureList()
+       ${schema_helpers.getWalmartFeatureList()})
     )
-)
+
