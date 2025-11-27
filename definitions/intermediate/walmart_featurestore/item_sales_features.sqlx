@@ -31,7 +31,6 @@ WITH item_sales AS (
         ON tf.ctx_date_month = tgt.ctx_date_month
         AND tf.ctx_item_id = tgt.ctx_item_id
         AND tf.ctx_store_id = tgt.ctx_store_id
-    WHERE tgt.ctx_store_id = "CA_1"
 )
 SELECT * 
 FROM PIVOT (
