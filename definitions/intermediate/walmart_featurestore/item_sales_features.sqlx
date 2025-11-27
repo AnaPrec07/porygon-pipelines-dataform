@@ -33,7 +33,7 @@ WITH item_sales AS (
         AND tf.ctx_store_id = tgt.ctx_store_id
 )
 SELECT * 
-FROM PIVOT (
+FROM item_sales PIVOT (
     ANY_VALUE(tgt_monthly_sales)
     FOR ctx_item_id IN (
        ${schema_helpers.getWalmartFeatureList()})
