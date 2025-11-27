@@ -43,7 +43,7 @@ identify_stockouts AS (
     END AS is_stockout,
   FROM zero_sales_days_diff days
   JOIN stockout_rate_threshold stckout
-    ON days.dept_id = dept_id
+    ON days.dept_id = stckout.dept_id
     AND days.store_id = stckout.store_id
 ),
 aggregate_daily_to_monthly AS (
