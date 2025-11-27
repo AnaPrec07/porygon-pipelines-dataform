@@ -1,29 +1,5 @@
-config {
-  type: "table",
-  schema: "walmart_training_tables",
-  description: "versioned training tables.",
-  tags: ["intermediate"],
-  assertions: {
-    nonNull: [
-        "ctx_date_month",
-        "ctx_cat_id",
-        "ctx_dept_id",
-        "ctx_item_id",
-        "ctx_state_id",
-        "ctx_store_id"
-    ],
-    uniqueKey: [
-        "ctx_date_month",
-        "ctx_cat_id",
-        "ctx_dept_id",
-        "ctx_item_id",
-        "ctx_state_id",
-        "ctx_store_id"
-    ]
-  }
-}
-
-SELECT 
+CREATE OR REPLACE TABLE `porygon-pipelines.walmart_training_tables.training_table_v8` AS (
+  SELECT 
     tgt.ctx_date_month,
     tgt.ctx_cat_id,
     tgt.ctx_dept_id,
@@ -41,9 +17,6 @@ SELECT
     tgt_days_is_zero_sales_lead_3_months,
     tgt_days_is_zero_sales_lead_4_months,
     tgt_monthly_sales_sum_3_next_months,
-    tgt_avg_change_3_next_months,
-    tgt_avg_change_3_prior_3_next_months,
-    tgt_ctx_prior_3_months_sum,
     fea_is_weekend,
     fea_is_event_1,
     fea_is_event_2,
@@ -347,9 +320,7 @@ SELECT
     fea_hobbies_monthly_sales_delta_roll_std_12_months,
     fea_household_monthly_sales_delta_roll_avg_3_months,
     fea_household_monthly_sales_delta_roll_std_3_months,
-
-    ----- here are the non-delta features:
-        fea_ca_monthly_sales_roll_avg_3_months,
+    fea_ca_monthly_sales_roll_avg_3_months,
     fea_ca_monthly_sales_roll_std_3_months,
     fea_ca_monthly_sales_roll_avg_6_months,
     fea_ca_monthly_sales_roll_std_6_months,
@@ -532,35 +503,54 @@ SELECT
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
     fea_all_item_monthly_sales_roll_std_12_months,
-    fea_detrender
-FROM ${ref("target_store_item_monthly")} tgt
-JOIN `porygon-pipelines.walmart_targets.new_stockout_filter` sf
+    fea_detrender,
+    itfeas.* EXCEPT(
+        ctx_date_month,
+        ctx_store_id,
+        ctx_state_id,
+        ctx_dept_id,
+        ctx_cat_id
+    )
+FROM `porygon-pipelines.walmart_targets.target_store_item_monthly` tgt
+JOIN `porygon-pipelines.walmart_targets.new_stockout_filter_v3` sf
     ON sf.ctx_date_month = tgt.ctx_date_month
     AND sf.ctx_item_id = tgt.ctx_item_id
     AND sf.ctx_store_id = tgt.ctx_store_id
-LEFT JOIN ${ref("calendar_features")} cal
+JOIN `porygon-pipelines.walmart_targets.target_outliers_filter` tf
+    ON tf.ctx_date_month = tgt.ctx_date_month
+    AND tf.ctx_item_id = tgt.ctx_item_id
+    AND tf.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN `porygon-pipelines.walmart_featurestore.calendar_features` cal
     ON cal.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("price_features_ts")} price_features
+LEFT JOIN `porygon-pipelines.walmart_featurestore.price_features_ts` price_features
     ON price_features.ctx_date_month = tgt.ctx_date_month
     AND price_features.ctx_item_id = tgt.ctx_item_id
     AND price_features.ctx_store_id = tgt.ctx_store_id
-LEFT JOIN ${ref("encoded_features")} enc
+LEFT JOIN `porygon-pipelines.walmart_featurestore.encoded_features` enc
     ON enc.ctx_date_month = tgt.ctx_date_month
     AND enc.ctx_item_id = tgt.ctx_item_id
     AND enc.ctx_store_id = tgt.ctx_store_id
-LEFT JOIN ${ref("weather_features")} wea_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.weather_features` wea_feas
     ON wea_feas.ctx_state_id = tgt.ctx_state_id
     AND wea_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("population_features")} pop_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.population_features` pop_feas
     ON pop_feas.ctx_state_id = tgt.ctx_state_id
     AND ctx_date_year = EXTRACT(YEAR FROM tgt.ctx_date_month)
-LEFT JOIN ${ref("economic_indicator_features")} econ_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.economic_indicator_features` econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("rolling_percent_error")} percent_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.rolling_percent_error` percent_feas
     ON percent_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("rolling_sales_features")} roll_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.rolling_sales_features_clean` roll_feas
     ON roll_feas.ctx_date_month = tgt.ctx_date_month
     AND roll_feas.ctx_item_id = tgt.ctx_item_id
     AND roll_feas.ctx_store_id = tgt.ctx_store_id
-LEFT JOIN ${ref("global_rolling_sales_features")} glob_feas
+LEFT JOIN `porygon-pipelines.walmart_featurestore.global_rolling_sales_features` glob_feas
     ON glob_feas.ctx_date_month = tgt.ctx_date_month
+LEFT JOIN `porygon-pipelines.walmart_featurestore.all_item_sales_features` itfeas
+    ON itfeas.ctx_date_month = itfeas.ctx_date_month
+    AND itfeas.ctx_dept_id = itfeas.ctx_dept_id
+    AND itfeas.ctx_store_id = itfeas.ctx_store_id
+WHERE tgt_days_is_zero_sales_lead_1_months <30
+AND tgt_days_is_zero_sales_lead_2_months <30
+AND tgt_days_is_zero_sales_lead_3_months <30
+)
