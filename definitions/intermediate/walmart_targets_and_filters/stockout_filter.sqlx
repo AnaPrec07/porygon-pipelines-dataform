@@ -34,7 +34,7 @@ identify_stockouts AS (
     DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
     days_since_last_sale AS fea_days_since_last_sale,
     item_id AS ctx_item_id,
-    store_id AS ctx_store_id,
+    days.store_id AS ctx_store_id,
     CASE 
       WHEN 
         fea_days_since_last_sale >= stockout_threshold_q90 
