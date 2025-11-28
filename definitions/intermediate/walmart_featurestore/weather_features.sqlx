@@ -1,19 +1,4 @@
-config {
-  type: "table",
-  schema: "walmart_featurestore",
-  description: "Weather features.",
-  tags: ["intermediate"],
-  assertions: {
-    nonNull: [
-      "ctx_date_month",
-      "ctx_state_id"
-    ],
-    uniqueKey: [
-      "ctx_date_month",
-      "ctx_state_id"
-    ],
-  }
-}
+
 
 
 WITH all_gsdo AS (
@@ -175,6 +160,7 @@ joined_df AS (
     CAST(snow_ice_pellets AS INT64) AS snow_ice_pellets,
     CAST(rain_drizzle AS INT64) AS rain_drizzle,
     CAST(fog AS INT64) AS fog,
+    gust,
     st.state
   FROM all_gsdo all_g
   JOIN `bigquery-public-data.noaa_gsod.stations` st
@@ -201,7 +187,7 @@ monthly_weather AS (
     AVG(snow_ice_pellets) AS mean_snow_ice_pellets,
     AVG(rain_drizzle) AS mean_rain_drizzle,
     -- calculate minimums:
-    MIN(temperature) AS min_temperature,
+    MIN(temp) AS min_temperature,
     MIN(dewp) AS min_dewp,
     MIN(visib) AS min_visib,
     MIN(wdsp) AS min_wdsp,
@@ -214,7 +200,7 @@ monthly_weather AS (
     MIN(snow_ice_pellets) AS min_snow_ice_pellets,
     MIN(rain_drizzle) AS min_rain_drizzle,
     -- calculate maximums:
-    MAX(temperature) AS max_temperature,
+    MAX(temp) AS max_temperature,
     MAX(dewp) AS max_dewp,
     MAX(visib) AS max_visib,
     MAX(wdsp) AS max_wdsp,
@@ -227,7 +213,7 @@ monthly_weather AS (
     MAX(snow_ice_pellets) AS max_snow_ice_pellets,
     MAX(rain_drizzle) AS max_rain_drizzle,
     -- calculate standard deviations:
-    STDDEV(temperature) AS std_temperature,
+    STDDEV(temp) AS std_temperature,
     STDDEV(dewp) AS std_dewp,
     STDDEV(visib) AS std_visib,
     STDDEV(wdsp) AS std_wdsp,
@@ -247,7 +233,7 @@ monthly_weather AS (
 SELECT 
   ctx_date_month,
   ctx_state_id,
-  AVG(temp) AS mean_temperature,
+  mean_temperature,
   mean_dewp,
   mean_visib,
   mean_wdsp,
@@ -298,57 +284,62 @@ SELECT
   std_thunder,
   std_snow_ice_pellets,
   std_rain_drizzle,
+
   -- create window functions for features - mean
-  generateRollAvgSTDEVPartition(mean_temperature, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_dewp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_visib, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_wdsp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_prcp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_sndp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_gust, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_tornado_funnel_cloud, partitionBy="stctx_state_idate"),
-  generateRollAvgSTDEVPartition(mean_thunder, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_snow_ice_pellets, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_rain_drizzle, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(mean_fog, partitionBy="ctx_state_id"),
+  ${window_functions.generateRollAvgSTDEVPartition(mean_temperature, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_dewp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_visib, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_wdsp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_prcp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_sndp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_gust, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_tornado_funnel_cloud, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_thunder, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_snow_ice_pellets, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_rain_drizzle, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(mean_fog, partitionBy="ctx_state_id")},
+
   -- create window functions for features - min
-  generateRollAvgSTDEVPartition(min_temperature, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_dewp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_visib, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_wdsp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_prcp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_sndp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_gust, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_tornado_funnel_cloud, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_thunder, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_snow_ice_pellets, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_rain_drizzle, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(min_fog, partitionBy="ctx_state_id"),
+  ${window_functions.generateRollAvgSTDEVPartition(min_temperature, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_dewp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_visib, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_wdsp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_prcp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_sndp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_gust, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_tornado_funnel_cloud, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_thunder, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_snow_ice_pellets, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_rain_drizzle, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(min_fog, partitionBy="ctx_state_id")},
+
   -- create window functions for features - max
-  generateRollAvgSTDEVPartition(max_temperature, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_dewp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_visib, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_wdsp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_prcp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_sndp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_gust, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_tornado_funnel_cloud, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_thunder, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_snow_ice_pellets, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_rain_drizzle, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(max_fog, partitionBy="ctx_state_id"),
+  ${window_functions.generateRollAvgSTDEVPartition(max_temperature, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_dewp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_visib, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_wdsp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_prcp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_sndp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_gust, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_tornado_funnel_cloud, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_thunder, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_snow_ice_pellets, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_rain_drizzle, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(max_fog, partitionBy="ctx_state_id")},
+
   -- create window functions for features - stdev
-  generateRollAvgSTDEVPartition(std_temperature, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_dewp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_visib, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_wdsp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_prcp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_sndp, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_gust, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_tornado_funnel_cloud, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_thunder, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_snow_ice_pellets, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_rain_drizzle, partitionBy="ctx_state_id"),
-  generateRollAvgSTDEVPartition(std_fog, partitionBy="ctx_state_id"),
+  ${window_functions.generateRollAvgSTDEVPartition(std_temperature, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_dewp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_visib, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_wdsp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_prcp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_sndp, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_gust, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_tornado_funnel_cloud, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_thunder, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_snow_ice_pellets, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_rain_drizzle, partitionBy="ctx_state_id")},
+  ${window_functions.generateRollAvgSTDEVPartition(std_fog, partitionBy="ctx_state_id")}
+  
 FROM monthly_weather
 
