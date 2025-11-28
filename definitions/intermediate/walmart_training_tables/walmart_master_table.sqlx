@@ -821,9 +821,9 @@ LEFT JOIN ${ref("rolling_sales_features")} roll_feas
 LEFT JOIN ${ref("global_rolling_sales_features")} glob_feas
     ON glob_feas.ctx_date_month = tgt.ctx_date_month
 LEFT JOIN ${ref("item_sales_features")} itfeas
-    ON itfeas.ctx_date_month = itfeas.ctx_date_month
-    AND itfeas.ctx_dept_id = itfeas.ctx_dept_id
-    AND itfeas.ctx_store_id = itfeas.ctx_store_id
+    ON itfeas.ctx_date_month = tgt.ctx_date_month
+    AND itfeas.ctx_dept_id = tgt.ctx_dept_id
+    AND itfeas.ctx_store_id = tgt.ctx_store_id
 WHERE tgt_days_is_zero_sales_lead_1_months <30
 AND tgt_days_is_zero_sales_lead_2_months <30
 AND tgt_days_is_zero_sales_lead_3_months <30
