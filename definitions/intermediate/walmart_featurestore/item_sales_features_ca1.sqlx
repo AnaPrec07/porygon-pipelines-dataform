@@ -17,10 +17,7 @@ WITH item_sales AS (
     SELECT
         tgt.ctx_date_month,
         tgt.ctx_store_id,
-        tgt.ctx_state_id,
         tgt.ctx_item_id,
-        tgt.ctx_dept_id,
-        tgt.ctx_cat_id,
         tgt.tgt_monthly_sales
     FROM ${ref("target_store_item_monthly")} tgt
     JOIN ${ref("stockout_filter")} sf
@@ -31,7 +28,7 @@ WITH item_sales AS (
         ON tf.ctx_date_month = tgt.ctx_date_month
         AND tf.ctx_item_id = tgt.ctx_item_id
         AND tf.ctx_store_id = tgt.ctx_store_id
-    WHERE ctx_store_id = "CA_1"
+    WHERE tgt.ctx_store_id = "CA_1"
 ),
 pivotted_values AS (
   SELECT * 
