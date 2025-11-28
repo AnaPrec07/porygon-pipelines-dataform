@@ -1,4 +1,11 @@
-CREATE OR REPLACE TABLE `porygon-pipelines.walmart_training_tables.training_table_v8` AS (
+config {
+  type: "table",
+  schema: "walmart_training_tables",
+  description: "walmart master table.",
+  tags: ["intermediate", "master"]
+}
+
+
   SELECT 
     -- context fields
     tgt.ctx_date_month,
