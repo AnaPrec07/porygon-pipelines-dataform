@@ -29,7 +29,7 @@ config {
     -- it_feas
     ca1.* EXCEPT(
         ctx_date_month,
-        ctx_store_id,
+        ctx_store_id
     )
 
 
