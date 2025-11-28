@@ -185,136 +185,52 @@ joined_df AS (
 ),
 monthly_weather AS (
   SELECT 
-    date,
-    state,
+    date AS ctx_date_month,
+    state AS ctx_state_id,
     AVG(mean_temperature) AS mean_temperature,
     AVG(mean_dewp) AS mean_dewp,
     AVG(mean_visib) AS mean_visib,
     AVG(mean_wdsp) AS mean_wdsp,
     AVG(mean_prcp) AS mean_prcp,
     AVG(mean_sndp) AS mean_sndp,
-    SUM(tornado_funnel_cloud) AS tornado_funnel_cloud,
-    SUM(thunder) AS thunder,
-    SUM(snow_ice_pellets) AS snow_ice_pellets,
-    SUM(rain_drizzle) AS rain_drizzle,
-    SUM(fog) AS fog,
+    AVG(gust) AS mean_gust,
+    SUM(tornado_funnel_cloud) AS sum_tornado_funnel_cloud,
+    SUM(thunder) AS sum_thunder,
+    SUM(snow_ice_pellets) AS sum_snow_ice_pellets,
+    SUM(rain_drizzle) AS sum_rain_drizzle,
+    AVG(fog) AS mean_fog,
   FROM joined_df
   GROUP BY 
   date,
   state
 )
 SELECT 
-  date AS ctx_date_month,
-  state AS ctx_state_id,
+  ctx_date_month,
+  ctx_state_id,
   mean_temperature AS fea_mean_temperature,
   mean_dewp AS fea_mean_dewp,
   mean_visib AS fea_mean_visib,
   mean_wdsp AS fea_mean_wdsp,
   mean_prcp AS fea_mean_prcp,
-  tornado_funnel_cloud AS fea_tornado_funnel_cloud,
-  thunder AS fea_thunder,
-  snow_ice_pellets AS fea_snow_ice_pellets,
-  rain_drizzle AS fea_rain_drizzle,
-  fog AS fea_fog,
-  AVG(mean_temperature) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_temprerature_roll_3,
-  AVG(mean_temperature) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_temprerature_roll_6,
-  AVG(mean_temperature) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_temprerature_roll_12,
-  AVG(mean_dewp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_dewp_roll_3,
-  AVG(mean_dewp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_dewp_roll_6,
-  AVG(mean_dewp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_dewp_roll_12,
-  AVG(mean_visib) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_visib_roll_3,
-  AVG(mean_visib) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_visib_roll_6,
-  AVG(mean_visib) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_visib_roll_12,
-  AVG(mean_wdsp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_wdsp_roll_6,
-  AVG(mean_wdsp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_wdsp_roll_12,
-  AVG(mean_prcp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_prcp_roll_6,
-  AVG(mean_prcp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_prcp_roll_12,
-  AVG(mean_sndp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_sndp_roll_6,
-  AVG(mean_sndp) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_sndp_roll_12,
-  AVG(tornado_funnel_cloud) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_tornado_funnel_cloud_roll_6,
-  AVG(tornado_funnel_cloud) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_tornado_funnel_cloud_roll_12,
-  AVG(thunder) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_thunder_roll_6,
-  AVG(thunder) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_thunder_roll_12,
-  AVG(snow_ice_pellets) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_snow_ice_pellets_roll_6,
-  AVG(snow_ice_pellets) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_snow_ice_pellets_roll_12,
-  AVG(rain_drizzle) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_rain_drizzle_roll_6,
-  AVG(rain_drizzle) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_rain_drizzle_roll_12,
-  AVG(fog) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 5 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_fog_roll_6,
-  AVG(fog) OVER (
-    PARTITION BY state ORDER BY date
-    ROWS BETWEEN 11 PRECEDING AND CURRENT ROW
-  ) AS fea_mean_fog_roll_12,
+  mean_sndp AS fea_mean_sndp,
+  mean_gust AS fea_mean_gust,
+  sum_tornado_funnel_cloud AS fea_sum_tornado_funnel_cloud,
+  sum_tornado_funnel_cloud AS fea_sum_thunder,
+  sum_snow_ice_pellets AS fea_sum_snow_ice_pellets,
+  sum_rain_drizzle AS fea_sum_rain_drizzle,
+  mean_fog AS fea_mean_fog,
+  -- create window functions for features
+  generateRollAvgSTDEVPartition(fea_mean_temperature, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_dewp, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_visib, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_wdsp, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_prcp, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_sndp, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_gust, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_sum_tornado_funnel_cloud, partitionBy="stctx_state_idate"),
+  generateRollAvgSTDEVPartition(fea_sum_thunder, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_sum_snow_ice_pellets, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_sum_rain_drizzle, partitionBy="ctx_state_id"),
+  generateRollAvgSTDEVPartition(fea_mean_fog, partitionBy="ctx_state_id"),
 FROM monthly_weather
 
