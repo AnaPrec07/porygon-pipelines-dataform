@@ -834,4 +834,3 @@ LEFT JOIN ${ref("item_sales_features")} itfeas
 WHERE tgt_days_is_zero_sales_lead_1_months <30
 AND tgt_days_is_zero_sales_lead_2_months <30
 AND tgt_days_is_zero_sales_lead_3_months <30
-)
