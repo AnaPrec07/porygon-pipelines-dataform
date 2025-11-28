@@ -1,4 +1,21 @@
 
+config {
+  type: "table",
+  schema: "walmart_featurestore",
+  description: "Rolling weather features per state.",
+  tags: ["intermediate"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_state_id"
+
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_state_id"
+    ],
+  }
+}
 
 
 WITH all_gsdo AS (
@@ -340,5 +357,5 @@ SELECT
   ${window_functions.generateRollAvgSTDEVPartition("std_snow_ice_pellets", partitionBy="ctx_state_id")},
   ${window_functions.generateRollAvgSTDEVPartition("std_rain_drizzle", partitionBy="ctx_state_id")},
   ${window_functions.generateRollAvgSTDEVPartition("std_fog", partitionBy="ctx_state_id")}
-  
+
 FROM monthly_weather
