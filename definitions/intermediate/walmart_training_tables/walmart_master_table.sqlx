@@ -812,9 +812,9 @@ LEFT JOIN ${ref("population_features")} pop_feas
     AND ctx_date_year = EXTRACT(YEAR FROM tgt.ctx_date_month)
 LEFT JOIN ${ref("economic_indicator_features")} econ_feas
     ON econ_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN ${ref("rolling_percent_error")} percent_feas
+LEFT JOIN ${ref("rolling_percent_sales")} percent_feas
     ON percent_feas.ctx_date_month = tgt.ctx_date_month
-LEFT JOIN JOIN ${ref("rolling_sales_features_clean")} roll_feas
+LEFT JOIN JOIN ${ref("rolling_sales_features")} roll_feas
     ON roll_feas.ctx_date_month = tgt.ctx_date_month
     AND roll_feas.ctx_item_id = tgt.ctx_item_id
     AND roll_feas.ctx_store_id = tgt.ctx_store_id
