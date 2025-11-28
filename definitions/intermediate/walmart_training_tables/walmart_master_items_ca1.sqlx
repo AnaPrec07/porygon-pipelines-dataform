@@ -1,0 +1,39 @@
+config {
+  type: "table",
+  schema: "walmart_training_tables",
+  description: "walmart master table.",
+  tags: ["intermediate", "master"]
+}
+
+
+  SELECT 
+    -- context fields
+    tgt.ctx_date_month,
+    tgt.ctx_cat_id,
+    tgt.ctx_dept_id,
+    tgt.ctx_item_id,
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
+
+    -- target fields
+    tgt_monthly_sales,
+    tgt_days_is_zero_sales,
+    tgt_monthly_sales_sum_3_next_months,
+
+    -- calendar feature fields
+    fea_month_sin,
+
+    -- encoded features
+    fea_item_id_encoded,
+
+    -- it_feas
+    ca1.* EXCEPT(
+        ctx_date_month,
+        ctx_store_id,
+    )
+
+
+FROM ${ref("walmart_master_table")} tgt
+JOIN ${ref("item_sales_features_ca1")} ca1
+    ON ca1.ctx_date_month = tgt.ctx_date_month
+WHERE tgt.ctx_store_id = "CA_1"
