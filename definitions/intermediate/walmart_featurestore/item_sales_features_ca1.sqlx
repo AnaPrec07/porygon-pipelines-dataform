@@ -18,6 +18,7 @@ WITH item_sales AS (
         tgt.ctx_date_month,
         tgt.ctx_store_id,
         tgt.ctx_item_id,
+        tgt.ctx_dept_id,
         tgt.tgt_monthly_sales
     FROM ${ref("target_store_item_monthly")} tgt
     JOIN ${ref("stockout_filter")} sf
@@ -42,9 +43,7 @@ pivotted_values AS (
 SELECT
   ctx_date_month,
   ctx_store_id,
-  ctx_state_id,
   ctx_dept_id,
-  ctx_cat_id,
   ${window_functions.generateRollAvgSTDEVNoPartition("FOODS_3_080", window=[3])},
   ${window_functions.generateRollAvgSTDEVNoPartition("FOODS_2_371", window=[3])},
   ${window_functions.generateRollAvgSTDEVNoPartition("FOODS_3_377", window=[3])},
