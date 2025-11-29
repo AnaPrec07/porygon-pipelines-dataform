@@ -1,0 +1,53 @@
+config {
+  type: "table",
+  schema: "walmart_targets_and_filters",
+  description: "Stockout filter: filters out items with stockout events.",
+  tags: ["intermediate", "filter"]
+}
+
+
+WITH percentiles AS (
+  SELECT 
+    ctx_state_id,
+    ctx_store_id,
+    ctx_cat_id,
+    ctx_dept_id,
+    APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(95)] AS outlier_threshold,
+  FROM ${ref("target_store_item_monthly")} tgt
+  GROUP BY    
+    ctx_state_id,
+    ctx_store_id,
+    ctx_cat_id,
+    ctx_dept_id
+),
+identify_outliers AS (
+  SELECT 
+    tgt.ctx_date_month,
+    tgt.ctx_item_id,
+    tgt.ctx_store_id,
+    CASE WHEN tgt_monthly_sales >= outlier_threshold THEN 1 ELSE 0 END AS is_outlier,
+  FROM targets_without_stockouts tgt
+  JOIN percentiles outl
+    ON tgt.ctx_dept_id = outl.ctx_dept_id
+    AND tgt.ctx_store_id = outl.ctx_store_id
+),
+outlier_lead_fields AS (
+  SELECT 
+      ctx_date_month,
+      ctx_item_id,
+      ctx_store_id,
+      is_outlier,
+      LEAD(is_outlier) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_outlier_lead_1,
+      LEAD(is_outlier, 2) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_outlier_lead_2,
+      LEAD(is_outlier, 3) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_outlier_lead_3,
+  FROM identify_outliers 
+)
+SELECT 
+    ctx_date_month,
+    ctx_item_id,
+    ctx_store_id,
+    is_outlier,
+    is_outlier_lead_1,
+    is_outlier_lead_2,
+    is_outlier_lead_3
+    FROM outlier_lied_fields
