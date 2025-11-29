@@ -22,11 +22,11 @@ zero_sales_days_diff AS (
 stockout_rate_threshold AS (
   SELECT 
     APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(90)] AS stockout_threshold_q90,
-    dept_id,
+    item_id,
     store_id
   FROM zero_sales_days_diff
   GROUP BY 
-    dept_id,
+    item_id,
     store_id
 ),
 identify_stockouts AS (
@@ -43,7 +43,7 @@ identify_stockouts AS (
     END AS is_stockout,
   FROM zero_sales_days_diff days
   JOIN stockout_rate_threshold stckout
-    ON days.dept_id = stckout.dept_id
+    ON days.item_id = stckout.item_id
     AND days.store_id = stckout.store_id
 ),
 aggregate_daily_to_monthly AS (
