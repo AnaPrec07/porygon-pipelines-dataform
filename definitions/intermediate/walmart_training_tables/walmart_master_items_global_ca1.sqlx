@@ -605,7 +605,7 @@ config {
     fea_all_item_monthly_sales_roll_avg_12_months,
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
-    fea_all_item_monthly_sales_roll_std_12_months
+    fea_all_item_monthly_sales_roll_std_12_months,
 
     -- it_feas
     ca1.* EXCEPT(
@@ -617,4 +617,6 @@ config {
 FROM ${ref("walmart_master_table")} tgt
 JOIN ${ref("item_sales_features_ca1")} ca1
     ON ca1.ctx_date_month = tgt.ctx_date_month
+    AND ca1.ctx_store_id = tgt.ctx_store_id
+    AND ca1.ctx_dept_id = tgt.ctx_dept_id
 WHERE tgt.ctx_store_id = "CA_1"
