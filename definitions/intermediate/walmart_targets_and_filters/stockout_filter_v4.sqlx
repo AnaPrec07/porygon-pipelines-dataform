@@ -59,9 +59,36 @@ aggregate_daily_to_monthly AS (
     ctx_item_id, 
     ctx_store_id
 )
-SELECT *,
-LEAD(is_stockout, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_stockout_lead_1,
-LEAD(is_stockout, 2) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_stockout_lead_2,
-LEAD(is_stockout, 3) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS is_stockout_lead_3
-FROM aggregate_daily_to_monthly 
+filter_out_stockout AS (
+  SELECT *,
+  FROM aggregate_per_month
+  WHERE is_stockout = 0
+),
+calcualte_leading_tgt_stockouts AS (
+  SELECT
+    LEAD(ctx_date_month, 3) OVER (
+        PARTITION BY item_id, store_id
+        ORDER BY ctx_date_month
+    ) AS lead_month_no_stockout,
+    * 
+  FROM filter_out_stockout
+).
+identify_stockouts_in_target AS (
+  SELECT 
+  ctx_date_month,
+  item_id AS ctx_item_id,
+  store_id AS ctx_store_id,
+  is_stockout,
+  CASE 
+  WHEN DATE_DIFF(lead_month_no_stockout, ctx_date_month, MONTH) = 3 
+  THEN 1
+  ELSE 0 
+  END AS is_stockout_tgt
+  FROM aggregate_per_month agm 
+  LEFT JOIN calcualte_leading_tgt_stockouts tgtstk 
+    ON agm.ctx_date_month = tgtstk.ctx_date_month
+    AND agm.item_id = tgtstk.item_id
+    AND agm.store_id = tgtstk.store_id
+)
+
 
