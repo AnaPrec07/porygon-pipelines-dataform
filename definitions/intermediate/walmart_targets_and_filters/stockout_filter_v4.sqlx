@@ -22,28 +22,28 @@ zero_sales_days_diff AS (
 stockout_rate_threshold AS (
   SELECT 
     APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(90)] AS stockout_threshold_q90,
-    item_id,
+    dept_id,
     store_id
   FROM zero_sales_days_diff
   GROUP BY 
-    item_id,
+    dept_id,
     store_id
 ),
 identify_stockouts AS (
   SELECT 
     DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
     days_since_last_sale AS fea_days_since_last_sale,
-    item_id AS ctx_item_id,
+    days.item_id AS ctx_item_id,
     days.store_id AS ctx_store_id,
     CASE 
       WHEN 
-        days_since_last_sale >= stockout_threshold_q90 
+        days_since_last_sale > stockout_threshold_q90
       THEN 1 
       ELSE 0 
     END AS is_stockout,
   FROM zero_sales_days_diff days
   JOIN stockout_rate_threshold stckout
-    ON days.item_id = stckout.item_id
+    ON days.dept_id = stckout.dept_id
     AND days.store_id = stckout.store_id
 ),
 aggregate_daily_to_monthly AS (
@@ -58,37 +58,38 @@ aggregate_daily_to_monthly AS (
     ctx_date_month, 
     ctx_item_id, 
     ctx_store_id
-)
+),
 filter_out_stockout AS (
   SELECT *,
-  FROM aggregate_per_month
+  FROM aggregate_daily_to_monthly
   WHERE is_stockout = 0
 ),
 calcualte_leading_tgt_stockouts AS (
   SELECT
     LEAD(ctx_date_month, 3) OVER (
-        PARTITION BY item_id, store_id
+        PARTITION BY ctx_item_id, ctx_store_id
         ORDER BY ctx_date_month
     ) AS lead_month_no_stockout,
     * 
   FROM filter_out_stockout
-).
-identify_stockouts_in_target AS (
+)x
   SELECT 
-  ctx_date_month,
-  item_id AS ctx_item_id,
-  store_id AS ctx_store_id,
-  is_stockout,
+  agm.ctx_date_month,
+  agm.ctx_item_id,
+  agm.ctx_store_id,
+  agm.is_stockout,
+  agm.fea_max_days_since_last_sale,
+  tgtstk.lead_month_no_stockout
   CASE 
-  WHEN DATE_DIFF(lead_month_no_stockout, ctx_date_month, MONTH) = 3 
-  THEN 1
-  ELSE 0 
+  WHEN DATE_DIFF(lead_month_no_stockout, agm.ctx_date_month, MONTH) = 3 
+  THEN 0
+  ELSE 1 
   END AS is_stockout_tgt
-  FROM aggregate_per_month agm 
+  FROM aggregate_daily_to_monthly agm 
   LEFT JOIN calcualte_leading_tgt_stockouts tgtstk 
     ON agm.ctx_date_month = tgtstk.ctx_date_month
-    AND agm.item_id = tgtstk.item_id
-    AND agm.store_id = tgtstk.store_id
-)
+    AND agm.ctx_item_id = tgtstk.ctx_item_id
+    AND agm.ctx_store_id = tgtstk.ctx_store_id
+
 
 
