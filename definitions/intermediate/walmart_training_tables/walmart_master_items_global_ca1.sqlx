@@ -616,7 +616,7 @@ config {
 
 
 FROM ${ref("walmart_master_table")} tgt
-JOIN ${ref("item_sales_features_ca1")} ca1
+LEFT JOIN ${ref("item_sales_features_ca1")} ca1
     ON ca1.ctx_date_month = tgt.ctx_date_month
     AND ca1.ctx_store_id = tgt.ctx_store_id
     AND ca1.ctx_dept_id = tgt.ctx_dept_id
