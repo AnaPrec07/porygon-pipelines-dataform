@@ -57,6 +57,6 @@ SELECT
     ctx_store_id,
     FROM outlier_lied_fields
     WHERE is_outlier = 0
-    AND is_outlier_lead_1 = 0
-    AND is_outlier_lead_2 = 0
-    AND is_outlier_lead_3 = 0
+    --AND is_outlier_lead_1 = 0
+    --AND is_outlier_lead_2 = 0
+    --AND is_outlier_lead_3 = 0
