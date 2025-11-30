@@ -21,7 +21,7 @@ percentiles AS (
     ctx_store_id,
     ctx_cat_id,
     ctx_dept_id,
-    APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(97)] AS outlier_threshold,
+    APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(97)] AS outlier_threshold_q97,
   FROM targets_without_stockouts
   GROUP BY    
     ctx_state_id,
@@ -34,7 +34,8 @@ identify_outliers AS (
     tgt.ctx_date_month,
     tgt.ctx_item_id,
     tgt.ctx_store_id,
-    CASE WHEN tgt_monthly_sales >= outlier_threshold THEN 1 ELSE 0 END AS is_outlier,
+    outlier_threshold_q97,
+    CASE WHEN tgt_monthly_sales >= outlier_threshold_q97 THEN 1 ELSE 0 END AS is_outlier,
   FROM targets_without_stockouts tgt
   JOIN percentiles outl
     ON tgt.ctx_dept_id = outl.ctx_dept_id
@@ -59,13 +60,14 @@ calcualte_leading_tgt_outliers AS (
   agm.ctx_item_id,
   agm.ctx_store_id,
   agm.is_stockout,
-  tgtstk.lead_month_no_outliers
+  tgtstk.lead_month_no_outliers,
+  outlier_threshold_q97,
   CASE 
   WHEN DATE_DIFF(lead_month_no_outliers, agm.ctx_date_month, MONTH) = 3 
   THEN 0
   ELSE 1 
   END AS is_tgt_complete_without_outliers,
-  FROM aggregate_daily_to_monthly agm 
+  FROM identify_outliers agm 
   LEFT JOIN calcualte_leading_tgt_outliers tgtstk 
     ON agm.ctx_date_month = tgtstk.ctx_date_month
     AND agm.ctx_item_id = tgtstk.ctx_item_id
