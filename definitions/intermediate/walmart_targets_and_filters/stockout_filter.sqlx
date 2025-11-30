@@ -62,22 +62,38 @@ aggregate_daily_to_monthly AS (
     ctx_store_id,
     stockout_threshold_q97
 ),
+joined_targets_and_stockouts AS (
+  SELECT 
+  agm.ctx_date_month,
+  agm.ctx_item_id,
+  agm.ctx_store_id,
+  agm.is_stockout_before_month,
+  agm.fea_max_days_since_last_sale,
+  agm.stockout_threshold_q97,
+  CASE WHEN 
+    tgtstk.tgt_days_is_zero_sales > agm.stockout_threshold_q97 THEN 1
+    ELSE 0 
+  END AS is_stockout_within_month,
+  FROM ${ref("target_store_item_monthly")} tgtstk 
+  LEFT JOIN aggregate_daily_to_monthly agm 
+    ON agm.ctx_date_month = tgtstk.ctx_date_month
+    AND agm.ctx_item_id = tgtstk.ctx_item_id
+    AND agm.ctx_store_id = tgtstk.ctx_store_id
+)
 SELECT 
-agm.ctx_date_month,
-agm.ctx_item_id,
-agm.ctx_store_id,
-agm.is_stockout,
-agm.fea_max_days_since_last_sale,
-agm.stockout_threshold_q97,
-MAX(is_stockout) OVER (
-  PARTITION BY ctx_item_id, ctx_store_id 
-  ORDER BY ctx_date_month 
-  ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)
-FROM ${ref(target_store_item_monthly)} tgtstk 
-LEFT JOIN aggregate_daily_to_monthly agm 
-  ON agm.ctx_date_month = tgtstk.ctx_date_month
-  AND agm.ctx_item_id = tgtstk.ctx_item_id
-  AND agm.ctx_store_id = tgtstk.ctx_store_id
-
-
-
+  ctx_date_month,
+  ctx_item_id,
+  ctx_store_id,
+  is_stockout_before_month,
+  fea_max_days_since_last_sale,
+  stockout_threshold_q97,
+  is_stockout_within_month,
+  MAX(is_stockout_before_month) OVER (
+    PARTITION BY ctx_item_id, ctx_store_id 
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING),
+  MAX(is_stockout_before_month) OVER (
+    PARTITION BY ctx_item_id, ctx_store_id 
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)
+FROM joined_targets_and_stockouts
