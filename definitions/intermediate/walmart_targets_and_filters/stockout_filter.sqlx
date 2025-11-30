@@ -83,6 +83,13 @@ joined_targets_and_stockouts AS (
   agm.fea_max_days_since_last_sale,
   agm.fea_min_days_to_next_sale,
   agm.stockout_threshold_q97,
+  CASE WHEN
+    (tgtstk.tgt_monthly_sales_lead_1_months > 0)
+    & (tgtstk.tgt_monthly_sales_lead_2_months > 0)
+    & (tgtstk.tgt_monthly_sales_lead_3_months > 0)
+    THEN 0
+    ELSE 1
+  END AS is_incomplete_3m_tgt
   FROM ${ref("target_store_item_monthly")} tgtstk 
   LEFT JOIN aggregate_daily_to_monthly agm 
     ON agm.ctx_date_month = tgtstk.ctx_date_month
