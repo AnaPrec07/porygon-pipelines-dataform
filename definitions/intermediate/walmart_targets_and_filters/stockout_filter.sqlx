@@ -91,9 +91,9 @@ SELECT
   MAX(is_stockout_before_month) OVER (
     PARTITION BY ctx_item_id, ctx_store_id 
     ORDER BY ctx_date_month 
-    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING),
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_before_month,
   MAX(is_stockout_before_month) OVER (
     PARTITION BY ctx_item_id, ctx_store_id 
     ORDER BY ctx_date_month 
-    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_within_month
 FROM joined_targets_and_stockouts
