@@ -60,8 +60,8 @@ aggregate_daily_to_monthly AS (
   SELECT 
     MAX(is_stockout_month_lag_sale) AS is_stockout_month_lag_sale,
     MAX(is_stockout_month_lead_sale) AS is_stockout_month_lead_sale,
-    MIN(fea_days_since_last_sale) AS fea_max_days_since_last_sale,
-    MAX(fea_days_to_next_sale) AS fea_max_days_to_next_sale,
+    MAX(fea_days_since_last_sale) AS fea_max_days_since_last_sale,
+    MIN(fea_days_to_next_sale) AS fea_max_days_to_next_sale,
     ctx_date_month,
     ctx_item_id, 
     ctx_store_id,
