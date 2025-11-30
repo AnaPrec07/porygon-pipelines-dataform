@@ -5,6 +5,8 @@ config {
   tags: ["intermediate", "filter"]
 }
 
+
+
 WITH percentiles AS (
   SELECT 
     ctx_state_id,
@@ -12,7 +14,7 @@ WITH percentiles AS (
     ctx_cat_id,
     ctx_dept_id,
     APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(97)] AS outlier_threshold_q97,
-  FROM targets_without_stockouts
+  FROM ${ref("target_store_item_monthly")}
   GROUP BY    
     ctx_state_id,
     ctx_store_id,
