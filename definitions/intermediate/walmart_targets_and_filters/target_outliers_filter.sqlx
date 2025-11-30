@@ -43,6 +43,7 @@ SELECT
   ctx_item_id,
   ctx_store_id,
   outlier_threshold_q97,
+  is_tgt_outlier,
   MAX(is_tgt_outlier) OVER (
     PARTITION BY ctx_item_id, ctx_store_id 
     ORDER BY ctx_date_month 
