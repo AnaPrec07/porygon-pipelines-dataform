@@ -21,7 +21,7 @@ zero_sales_days_diff AS (
 ),
 stockout_rate_threshold AS (
   SELECT 
-    APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(90)] AS stockout_threshold_q90,
+    APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS stockout_threshold_q97,
     dept_id,
     store_id
   FROM zero_sales_days_diff
@@ -33,11 +33,11 @@ identify_stockouts AS (
   SELECT 
     DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
     days_since_last_sale AS fea_days_since_last_sale,
-    item_id AS ctx_item_id,
+    days.item_id AS ctx_item_id,
     days.store_id AS ctx_store_id,
     CASE 
       WHEN 
-        days_since_last_sale >= stockout_threshold_q90 
+        days_since_last_sale > stockout_threshold_q90
       THEN 1 
       ELSE 0 
     END AS is_stockout,
@@ -58,7 +58,38 @@ aggregate_daily_to_monthly AS (
     ctx_date_month, 
     ctx_item_id, 
     ctx_store_id
+),
+filter_out_stockout AS (
+  SELECT *,
+  FROM aggregate_daily_to_monthly
+  WHERE is_stockout = 0
+),
+calcualte_leading_tgt_stockouts AS (
+  SELECT
+    LEAD(ctx_date_month, 3) OVER (
+        PARTITION BY ctx_item_id, ctx_store_id
+        ORDER BY ctx_date_month
+    ) AS lead_month_no_stockout,
+    * 
+  FROM filter_out_stockout
 )
-SELECT * 
-FROM aggregate_daily_to_monthly 
-WHERE is_stockout <1
+  SELECT 
+  agm.ctx_date_month,
+  agm.ctx_item_id,
+  agm.ctx_store_id,
+  agm.is_stockout,
+  agm.fea_max_days_since_last_sale,
+  tgtstk.lead_month_no_stockout
+  CASE 
+  WHEN DATE_DIFF(lead_month_no_stockout, agm.ctx_date_month, MONTH) = 3 
+  THEN 0
+  ELSE 1 
+  END AS is_tgt_complete_without_stockout,
+  FROM aggregate_daily_to_monthly agm 
+  LEFT JOIN calcualte_leading_tgt_stockouts tgtstk 
+    ON agm.ctx_date_month = tgtstk.ctx_date_month
+    AND agm.ctx_item_id = tgtstk.ctx_item_id
+    AND agm.ctx_store_id = tgtstk.ctx_store_id
+
+
+

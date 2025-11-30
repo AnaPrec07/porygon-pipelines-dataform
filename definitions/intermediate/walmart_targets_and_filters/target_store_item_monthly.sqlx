@@ -1,6 +1,6 @@
 config {
   type: "table",
-  schema: "walmart_targets",
+  schema: "walmart_targets_and_filters",
   description: "Target for deptartment, item, daily hierarchy.",
   columns: {
     ctx_date_month: walmart_descriptions.ctx_date_month,
