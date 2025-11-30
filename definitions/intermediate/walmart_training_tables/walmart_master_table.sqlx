@@ -20,6 +20,18 @@ config {
     tgt_days_is_zero_sales,
     tgt_monthly_sales_sum_3_next_months,
 
+    -- outlier filters
+    is_outlier,
+    lead_month_no_outliers,
+    outlier_threshold_q97,
+    is_tgt_complete_without_outliers,
+
+    -- stockout filters
+    fea_max_days_since_last_sale,
+    stockout_threshold_q97,
+    lead_month_no_stockout,
+    is_tgt_complete_without_stockout,
+
     -- calendar feature fields
     fea_is_weekend,
     fea_is_event_1,
