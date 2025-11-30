@@ -27,6 +27,7 @@ config {
     is_tgt_complete_without_outliers,
 
     -- stockout filters
+    is_stockout,
     fea_max_days_since_last_sale,
     stockout_threshold_q97,
     lead_month_no_stockout,

@@ -5,17 +5,7 @@ config {
   tags: ["intermediate", "filter"]
 }
 
-
-
-WITH targets_without_stockouts AS (
-  SELECT tgt.*
-  FROM ${ref("target_store_item_monthly")} tgt
-  JOIN ${ref("stockout_filter")} fv3
-  ON tgt.ctx_item_id = fv3.ctx_item_id
-  AND tgt.ctx_date_month = fv3.ctx_date_month
-  AND tgt.ctx_store_id = fv3.ctx_store_id
-),
-percentiles AS (
+WITH percentiles AS (
   SELECT 
     ctx_state_id,
     ctx_store_id,
