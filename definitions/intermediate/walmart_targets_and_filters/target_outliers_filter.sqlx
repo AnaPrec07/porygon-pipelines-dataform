@@ -59,9 +59,9 @@ calcualte_leading_tgt_outliers AS (
   agm.ctx_date_month,
   agm.ctx_item_id,
   agm.ctx_store_id,
-  agm.is_stockout,
+  agm.is_outlier,
   tgtstk.lead_month_no_outliers,
-  outlier_threshold_q97,
+  agm.outlier_threshold_q97,
   CASE 
   WHEN DATE_DIFF(lead_month_no_outliers, agm.ctx_date_month, MONTH) = 3 
   THEN 0
