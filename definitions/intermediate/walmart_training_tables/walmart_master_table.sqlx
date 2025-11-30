@@ -21,10 +21,9 @@ config {
     tgt_monthly_sales_sum_3_next_months,
 
     -- outlier filters
-    is_outlier,
-    lead_month_no_outliers,
     outlier_threshold_q97,
-    is_tgt_complete_without_outliers,
+    is_tgt_outlier,
+    is_outlier_3m_tgt,
 
     -- stockout filters
     is_stockout_month_lag_sale,
