@@ -31,7 +31,6 @@ config {
     fea_max_days_since_last_sale,
     stockout_threshold_q97,
     is_stockout_within_month,
-    lead_month_no_stockout,
     is_stockout_tgt_before_month,
     is_stockout_tgt_within_month,
 
