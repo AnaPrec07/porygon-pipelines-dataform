@@ -30,7 +30,7 @@ config {
     is_stockout_month_lag_sale,
     is_stockout_month_lead_sale,
     fea_max_days_since_last_sale,
-    fea_max_days_to_next_sale,
+    fea_min_days_to_next_sale,
     stockout_threshold_q97,
     is_stockout_tgt_lag,
     is_stockout_tgt_lead,

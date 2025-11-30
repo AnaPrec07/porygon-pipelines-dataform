@@ -47,7 +47,7 @@ identify_stockouts AS (
     END AS is_stockout_month_lag_sale,
     CASE 
       WHEN 
-        days_to_next_sale < (stockout_threshold_q97*-1)
+        abs(days_to_next_sale) > (stockout_threshold_q97)
       THEN 1 
       ELSE 0 
     END AS is_stockout_month_lead_sale,
@@ -61,7 +61,7 @@ aggregate_daily_to_monthly AS (
     MAX(is_stockout_month_lag_sale) AS is_stockout_month_lag_sale,
     MAX(is_stockout_month_lead_sale) AS is_stockout_month_lead_sale,
     MAX(fea_days_since_last_sale) AS fea_max_days_since_last_sale,
-    MIN(fea_days_to_next_sale) AS fea_max_days_to_next_sale,
+    MIN(fea_days_to_next_sale) AS fea_min_days_to_next_sale,
     ctx_date_month,
     ctx_item_id, 
     ctx_store_id,
@@ -81,7 +81,7 @@ joined_targets_and_stockouts AS (
   agm.is_stockout_month_lag_sale,
   agm.is_stockout_month_lead_sale,
   agm.fea_max_days_since_last_sale,
-  agm.fea_max_days_to_next_sale,
+  agm.fea_min_days_to_next_sale,
   agm.stockout_threshold_q97,
   FROM ${ref("target_store_item_monthly")} tgtstk 
   LEFT JOIN aggregate_daily_to_monthly agm 
@@ -96,7 +96,7 @@ SELECT
   is_stockout_month_lag_sale,
   is_stockout_month_lead_sale,
   fea_max_days_since_last_sale,
-  fea_max_days_to_next_sale,
+  fea_min_days_to_next_sale,
   stockout_threshold_q97,
   MAX(is_stockout_month_lag_sale) OVER (
     PARTITION BY ctx_item_id, ctx_store_id 
