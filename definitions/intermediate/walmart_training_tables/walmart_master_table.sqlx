@@ -27,12 +27,13 @@ config {
     is_tgt_complete_without_outliers,
 
     -- stockout filters
-    is_stockout_before_month,
+    is_stockout_month_lag_sale,
+    is_stockout_month_lead_sale,
     fea_max_days_since_last_sale,
+    fea_max_days_to_next_sale,
     stockout_threshold_q97,
-    is_stockout_within_month,
-    is_stockout_tgt_before_month,
-    is_stockout_tgt_within_month,
+    is_stockout_tgt_lag,
+    is_stockout_tgt_lead,
 
     -- calendar feature fields
     fea_is_weekend,
