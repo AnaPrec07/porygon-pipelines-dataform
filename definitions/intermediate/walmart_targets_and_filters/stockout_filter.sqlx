@@ -83,10 +83,9 @@ joined_targets_and_stockouts AS (
   agm.fea_max_days_since_last_sale,
   agm.fea_min_days_to_next_sale,
   agm.stockout_threshold_q97,
-  CASE WHEN
-    (tgtstk.tgt_monthly_sales_lead_1_months > 0)
-    & (tgtstk.tgt_monthly_sales_lead_2_months > 0)
-    & (tgtstk.tgt_monthly_sales_lead_3_months > 0)
+  CASE WHEN tgtstk.tgt_monthly_sales_lead_1_months > 0
+    AND tgtstk.tgt_monthly_sales_lead_2_months > 0
+    AND tgtstk.tgt_monthly_sales_lead_3_months > 0
     THEN 0
     ELSE 1
   END AS is_incomplete_3m_tgt
@@ -112,5 +111,6 @@ SELECT
   MAX(is_stockout_month_lead_sale) OVER (
     PARTITION BY ctx_item_id, ctx_store_id 
     ORDER BY ctx_date_month 
-    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_lead
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_lead,
+    is_incomplete_3m_tgt
 FROM joined_targets_and_stockouts
