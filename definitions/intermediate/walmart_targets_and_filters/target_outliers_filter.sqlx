@@ -14,7 +14,12 @@ WITH percentiles AS (
     ctx_cat_id,
     ctx_dept_id,
     APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(97)] AS outlier_threshold_q97,
-  FROM ${ref("target_store_item_monthly")}
+  FROM ${ref("target_store_item_monthly")} tgt
+  JOIN ${ref("stockout_filter")} stf
+  ON stf.ctx_item_id = tgt.ctx_item_id
+  AND stf.ctx_date_month = tgt.ctx_date_month
+  AND stf.ctx_store_id = tgt.ctx_store_id
+  WHERE is_incomplete_3m_tgt = 0
   GROUP BY    
     ctx_state_id,
     ctx_store_id,
@@ -27,40 +32,19 @@ identify_outliers AS (
     tgt.ctx_item_id,
     tgt.ctx_store_id,
     outlier_threshold_q97,
-    CASE WHEN tgt_monthly_sales >= outlier_threshold_q97 THEN 1 ELSE 0 END AS is_outlier,
+    CASE WHEN tgt_monthly_sales > outlier_threshold_q97 THEN 1 ELSE 0 END AS is_tgt_outlier,
   FROM ${ref("target_store_item_monthly")} tgt
   JOIN percentiles outl
     ON tgt.ctx_dept_id = outl.ctx_dept_id
     AND tgt.ctx_store_id = outl.ctx_store_id
-),
-filter_out_outliers AS (
-  SELECT *,
-  FROM identify_outliers
-  WHERE is_outlier = 0
-),
-calcualte_leading_tgt_outliers AS (
-  SELECT
-    LEAD(ctx_date_month, 3) OVER (
-        PARTITION BY ctx_item_id, ctx_store_id
-        ORDER BY ctx_date_month
-    ) AS lead_month_no_outliers,
-    * 
-  FROM filter_out_outliers
 )
-  SELECT 
-  agm.ctx_date_month,
-  agm.ctx_item_id,
-  agm.ctx_store_id,
-  agm.is_outlier,
-  tgtstk.lead_month_no_outliers,
-  agm.outlier_threshold_q97,
-  CASE 
-  WHEN DATE_DIFF(lead_month_no_outliers, agm.ctx_date_month, MONTH) = 3 
-  THEN 0
-  ELSE 1 
-  END AS is_tgt_complete_without_outliers,
-  FROM identify_outliers agm 
-  LEFT JOIN calcualte_leading_tgt_outliers tgtstk 
-    ON agm.ctx_date_month = tgtstk.ctx_date_month
-    AND agm.ctx_item_id = tgtstk.ctx_item_id
-    AND agm.ctx_store_id = tgtstk.ctx_store_id
+SELECT 
+  ctx_date_month,
+  ctx_item_id,
+  ctx_store_id,
+  outlier_threshold_q97,
+  MAX(is_tgt_outlier) OVER (
+    PARTITION BY ctx_item_id, ctx_store_id 
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_outlier_3m_tgt,
+FROM identify_outliers
