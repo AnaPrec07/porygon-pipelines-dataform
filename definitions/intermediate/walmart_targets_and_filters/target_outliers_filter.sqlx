@@ -28,7 +28,7 @@ identify_outliers AS (
     tgt.ctx_store_id,
     outlier_threshold_q97,
     CASE WHEN tgt_monthly_sales >= outlier_threshold_q97 THEN 1 ELSE 0 END AS is_outlier,
-  FROM targets_without_stockouts tgt
+  FROM ${ref("target_store_item_monthly")} tgt
   JOIN percentiles outl
     ON tgt.ctx_dept_id = outl.ctx_dept_id
     AND tgt.ctx_store_id = outl.ctx_store_id
