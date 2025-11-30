@@ -34,6 +34,7 @@ config {
     stockout_threshold_q97,
     is_stockout_tgt_lag,
     is_stockout_tgt_lead,
+    is_incomplete_3m_tgt,
 
     -- calendar feature fields
     fea_is_weekend,
