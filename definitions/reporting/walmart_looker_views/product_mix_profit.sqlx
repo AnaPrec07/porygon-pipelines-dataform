@@ -17,6 +17,9 @@ SELECT
 
 FROM ${ref("target_store_item_monthly")} tgt
 LEFT JOIN ${ref("price_features_ts")} price
+  ON tgt.ctx_item_id = price.ctx_item_id
+  AND tgt.ctx_store_id = price.ctx_store_id
+  AND tgt.ctx_date_month = price.ctx_date_month
 GROUP BY 
     tgt.ctx_state_id,
     tgt.ctx_store_id,
