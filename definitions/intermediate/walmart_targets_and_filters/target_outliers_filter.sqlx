@@ -9,10 +9,10 @@ config {
 
 WITH percentiles AS (
   SELECT 
-    ctx_state_id,
-    ctx_store_id,
-    ctx_cat_id,
-    ctx_dept_id,
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
+    tgt.ctx_cat_id,
+    tgt.ctx_dept_id,
     APPROX_QUANTILES(tgt_monthly_sales, 100)[OFFSET(97)] AS outlier_threshold_q97,
   FROM ${ref("target_store_item_monthly")} tgt
   JOIN ${ref("stockout_filter")} stf
@@ -21,10 +21,10 @@ WITH percentiles AS (
   AND stf.ctx_store_id = tgt.ctx_store_id
   WHERE is_incomplete_3m_tgt = 0
   GROUP BY    
-    ctx_state_id,
-    ctx_store_id,
-    ctx_cat_id,
-    ctx_dept_id
+    tgt.ctx_state_id,
+    tgt.ctx_store_id,
+    tgt.ctx_cat_id,
+    tgt.ctx_dept_id
 ),
 identify_outliers AS (
   SELECT 
