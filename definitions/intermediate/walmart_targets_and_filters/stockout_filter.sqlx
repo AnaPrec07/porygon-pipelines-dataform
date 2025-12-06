@@ -76,9 +76,9 @@ aggregate_daily_to_monthly AS (
 ),
 joined_targets_and_stockouts AS (
   SELECT 
-  agm.ctx_date_month,
-  agm.ctx_item_id,
-  agm.ctx_store_id,
+  tgtstk.ctx_date_month,
+  tgtstk.ctx_item_id,
+  tgtstk.ctx_store_id,
   agm.is_stockout_month_lag_sale,
   agm.is_stockout_month_lead_sale,
   agm.fea_max_days_since_last_sale,
