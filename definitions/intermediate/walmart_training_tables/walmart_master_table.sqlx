@@ -42,6 +42,12 @@ config {
     is_stockout_tgt_lead,
     is_incomplete_3m_tgt,
 
+    -- item_longevity_filters
+    ctx_first_date,
+    is_one_year_old,
+    is_six_months_old,
+    is_3_months_old
+
     -- calendar feature fields
     fea_is_weekend,
     fea_is_event_1,
