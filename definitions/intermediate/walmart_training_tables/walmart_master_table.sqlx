@@ -19,6 +19,13 @@ config {
     tgt_monthly_sales,
     tgt_days_is_zero_sales,
     tgt_monthly_sales_sum_3_next_months,
+    tgt_monthly_sales_lead_1_months,
+    tgt_monthly_sales_lead_2_months,
+    tgt_monthly_sales_lead_3_months,
+    tgt_days_is_zero_sales_lead_1_months,
+    tgt_days_is_zero_sales_lead_2_months,
+    tgt_days_is_zero_sales_lead_3_months,
+    tgt_days_is_zero_sales_lead_4_months,
 
     -- outlier filters
     outlier_threshold_q97,
@@ -660,3 +667,6 @@ LEFT JOIN ${ref("target_outliers_filter")} tf
     ON tf.ctx_date_month = tgt.ctx_date_month
     AND tf.ctx_item_id = tgt.ctx_item_id
     AND tf.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN `porygon-pipelines.walmart_targets_and_filters.item_longevity_filters` lf 
+    ON m.ctx_item_id = lf.ctx_item_id
+    AND m.ctx_date_month = lf.ctx_date_month
