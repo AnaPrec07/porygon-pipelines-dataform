@@ -1,0 +1,116 @@
+config {
+  type: "table",
+  schema: "walmart_targets_and_filters",
+  description: "Stockout filter: filters out items with stockout events.",
+  tags: ["intermediate", "filter"]
+}
+
+
+WITH remove_zero_sales_days AS (
+  SELECT 
+  *
+  FROM ${ref("daily_sales_melted")}
+  WHERE daily_sales > 0
+),
+zero_sales_days_diff AS (
+  SELECT 
+    LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date) AS ctx_last_day_sales,
+    LEAD(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date) AS ctx_lead_day_sales,
+    DATE_DIFF(ctx_date, LAG(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date), DAY) AS days_since_last_sale,
+    DATE_DIFF(ctx_date, LEAD(ctx_date, 1) OVER (PARTITION BY store_id, item_id ORDER BY ctx_date), DAY) AS days_to_next_sale,
+    *
+  FROM remove_zero_sales_days
+),
+stockout_rate_threshold AS (
+  SELECT 
+    APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS stockout_threshold_q97,
+    dept_id,
+    store_id
+  FROM zero_sales_days_diff
+  GROUP BY 
+    dept_id,
+    store_id
+),
+identify_stockouts AS (
+  SELECT 
+    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
+    days_since_last_sale AS fea_days_since_last_sale,
+    days_to_next_sale AS fea_days_to_next_sale,
+    days.item_id AS ctx_item_id,
+    days.store_id AS ctx_store_id,
+    stockout_threshold_q97,
+    CASE 
+      WHEN 
+        days_since_last_sale > stockout_threshold_q97
+      THEN 1 
+      ELSE 0 
+    END AS is_stockout_month_lag_sale,
+    CASE 
+      WHEN 
+        abs(days_to_next_sale) > (stockout_threshold_q97)
+      THEN 1 
+      ELSE 0 
+    END AS is_stockout_month_lead_sale,
+  FROM zero_sales_days_diff days
+  JOIN stockout_rate_threshold stckout
+    ON days.dept_id = stckout.dept_id
+    AND days.store_id = stckout.store_id
+),
+aggregate_daily_to_monthly AS (
+  SELECT 
+    MAX(is_stockout_month_lag_sale) AS is_stockout_month_lag_sale,
+    MAX(is_stockout_month_lead_sale) AS is_stockout_month_lead_sale,
+    MAX(fea_days_since_last_sale) AS fea_max_days_since_last_sale,
+    MIN(fea_days_to_next_sale) AS fea_min_days_to_next_sale,
+    ctx_date_month,
+    ctx_item_id, 
+    ctx_store_id,
+    stockout_threshold_q97
+  FROM identify_stockouts
+  GROUP BY  
+    ctx_date_month, 
+    ctx_item_id, 
+    ctx_store_id,
+    stockout_threshold_q97
+),
+joined_targets_and_stockouts AS (
+  SELECT 
+  agm.ctx_date_month,
+  agm.ctx_item_id,
+  agm.ctx_store_id,
+  agm.is_stockout_month_lag_sale,
+  agm.is_stockout_month_lead_sale,
+  agm.fea_max_days_since_last_sale,
+  agm.fea_min_days_to_next_sale,
+  agm.stockout_threshold_q97,
+  CASE WHEN tgtstk.tgt_monthly_sales_lead_1_months > 0
+    AND tgtstk.tgt_monthly_sales_lead_2_months > 0
+    AND tgtstk.tgt_monthly_sales_lead_3_months > 0
+    THEN 0
+    ELSE 1
+  END AS is_incomplete_3m_tgt
+  FROM ${ref("target_store_item_monthly")} tgtstk 
+  LEFT JOIN aggregate_daily_to_monthly agm 
+    ON agm.ctx_date_month = tgtstk.ctx_date_month
+    AND agm.ctx_item_id = tgtstk.ctx_item_id
+    AND agm.ctx_store_id = tgtstk.ctx_store_id
+)
+SELECT 
+  ctx_date_month,
+  ctx_item_id,
+  ctx_store_id,
+  is_stockout_month_lag_sale,
+  is_stockout_month_lead_sale,
+  fea_max_days_since_last_sale,
+  fea_min_days_to_next_sale,
+  stockout_threshold_q97,
+  MAX(is_stockout_month_lag_sale) OVER (
+    PARTITION BY ctx_item_id, ctx_store_id 
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_lag,
+  MAX(is_stockout_month_lead_sale) OVER (
+    PARTITION BY ctx_item_id, ctx_store_id 
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING) AS is_stockout_tgt_lead,
+    is_incomplete_3m_tgt
+FROM joined_targets_and_stockouts
