@@ -44,8 +44,10 @@ config {
 
     -- item_longevity_filters
     ctx_first_date,
+    fea_month_difference,
     is_one_year_old,
     is_six_months_old,
+    is_three_months_old
 
     -- reduced features
     fea_item_monthly_sales,
