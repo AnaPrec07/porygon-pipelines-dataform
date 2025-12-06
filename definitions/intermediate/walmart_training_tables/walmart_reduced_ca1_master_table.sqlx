@@ -46,7 +46,6 @@ config {
     ctx_first_date,
     is_one_year_old,
     is_six_months_old,
-    is_3_months_old
 
     -- reduced features
     fea_item_monthly_sales,
@@ -240,5 +239,5 @@ config {
     fea_ca_2_monthly_sales_roll_std_12_months,
     fea_state_price_min
     
-FROM ${ref("walmart_master_table")} m
+FROM ${ref("walmart_master_table")} tgt
 WHERE ctx_store_id = "CA_1"
