@@ -674,5 +674,5 @@ LEFT JOIN ${ref("target_outliers_filter")} tf
     AND tf.ctx_item_id = tgt.ctx_item_id
     AND tf.ctx_store_id = tgt.ctx_store_id
 LEFT JOIN `porygon-pipelines.walmart_targets_and_filters.item_longevity_filters` lf 
-    ON m.ctx_item_id = lf.ctx_item_id
-    AND m.ctx_date_month = lf.ctx_date_month
+    ON tgt.ctx_item_id = lf.ctx_item_id
+    AND tgt.ctx_date_month = lf.ctx_date_month
