@@ -23,7 +23,8 @@ zero_sales_days_diff AS (
 ),
 stockout_rate_threshold AS (
   SELECT 
-    APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS stockout_threshold_q97,
+    20 AS stockout_threshold_q97,
+    -- APPROX_QUANTILES(days_since_last_sale, 100)[OFFSET(97)] AS stockout_threshold_q97,
     dept_id,
     store_id
   FROM zero_sales_days_diff
