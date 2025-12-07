@@ -62,6 +62,7 @@ config {
     fea_is_snap_wi,
     fea_month_sin,
     fea_detrender,
+    fea_is_weekend_3m,
     fea_is_event_1_3m,
     fea_is_event_2_3m,
     fea_is_sporting_event_3m,

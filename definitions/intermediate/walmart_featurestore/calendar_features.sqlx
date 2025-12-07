@@ -80,7 +80,7 @@ SELECT
   fea_is_snap_wi,
   fea_month_sin,
   fea_detrender,
-  SUM(fea_is_weekend) OVER (
+  SUM(fea_is_event_1_3m) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_event_1_3m,
@@ -92,10 +92,10 @@ SELECT
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
   ) AS fea_is_sporting_event_3m,
-  SUM(is_cultural_event) OVER (
+  SUM(fea_is_cultural_event) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
-  ) AS is_cultural_event_3m,
+  ) AS fea_is_cultural_event_3m,
   SUM(fea_is_national_event) OVER (
     ORDER BY ctx_date_month 
     ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
