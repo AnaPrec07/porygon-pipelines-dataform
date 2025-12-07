@@ -45,7 +45,8 @@ WITH intermediate_aggregations AS (
     snap_TX,
     snap_WI
   FROM ${ref("calendar")}
-)
+),
+events_at_monthly_level AS (
 SELECT 
   ctx_date_month, 
   SUM(is_weekend) AS fea_is_weekend,
@@ -64,3 +65,44 @@ FROM intermediate_aggregations
 GROUP BY 
     ctx_date_month, 
     fea_month_sin
+)
+SELECT
+  ctx_date_month,
+  fea_is_weekend,
+  fea_is_event_1,
+  fea_is_event_2,
+  fea_is_sporting_event,
+  fea_is_cultural_event,
+  fea_is_national_event,
+  fea_is_religious_event,
+  fea_is_snap_ca,
+  fea_is_snap_tx,
+  fea_is_snap_wi,
+  fea_month_sin,
+  fea_detrender,
+  SUM(fea_is_weekend) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_event_1_3m,
+  SUM(fea_is_event_2) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_event_2_3m,
+  SUM(fea_is_sporting_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_sporting_event_3m,
+  SUM(is_cultural_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS is_cultural_event_3m,
+  SUM(fea_is_national_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_national_event_3m,
+  SUM(fea_is_religious_event) OVER (
+    ORDER BY ctx_date_month 
+    ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING
+  ) AS fea_is_snap_ca_3m
+  FROM events_at_monthly_level
+
