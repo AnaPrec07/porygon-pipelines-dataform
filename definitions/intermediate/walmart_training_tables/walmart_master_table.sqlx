@@ -47,7 +47,7 @@ config {
     fea_month_difference,
     is_one_year_old,
     is_six_months_old,
-    is_three_months_old
+    is_three_months_old,
 
     -- calendar feature fields
     fea_is_weekend,
@@ -62,6 +62,12 @@ config {
     fea_is_snap_wi,
     fea_month_sin,
     fea_detrender,
+    fea_is_event_1_3m,
+    fea_is_event_2_3m,
+    fea_is_sporting_event_3m,
+    fea_is_cultural_event_3m,
+    fea_is_national_event_3m,
+    fea_is_snap_ca_3m,
 
     -- price price_features
     fea_item_price_avg,
