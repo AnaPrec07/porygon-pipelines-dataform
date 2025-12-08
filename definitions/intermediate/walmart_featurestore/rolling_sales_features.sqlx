@@ -100,7 +100,7 @@ item_total_ts AS (
     ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
     ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_num_days_is_zero_sales", partitionBy="ctx_item_id")},
   FROM item_total it
-)
+),
 SELECT 
   it.ctx_date_month,
   it.ctx_item_id,
@@ -117,22 +117,6 @@ SELECT
   it.fea_item_monthly_sales_lag_2_months,
   it.fea_item_monthly_sales_lag_3_months,
   it.fea_item_monthly_sales_lag_4_months,
-  CORR(
-    it.fea_item_monthly_sales, 
-    it.fea_item_monthly_sales_lag_1_months
-  ) AS fea_autocorrelation_lag_1,
-  CORR(
-    it.fea_item_monthly_sales, 
-    it.fea_item_monthly_sales_lag_2_months
-  ) AS fea_autocorrelation_lag_2,
-  CORR(
-    it.fea_item_monthly_sales, 
-    it.fea_item_monthly_sales_lag_3_months
-  ) AS fea_autocorrelation_lag_3,
-  CORR(
-    it.fea_item_monthly_sales, 
-    it.fea_item_monthly_sales_lag_4_months
-  ) AS fea_autocorrelation_lag_4,
   SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
   it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
   it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
