@@ -8,117 +8,6 @@ config {
 
 WITH last_date_dataframe AS (
   SELECT 
-    *,
-    CASE 
-      WHEN daily_sales > 0 THEN ctx_date ELSE NULL 
-    END AS ctx_last_dales_date
-  FROM ${ref("walmart_raw.daily_sales_melted")}
-  WHERE store_id = "CA_1"
-),
-last_day_ff_df AS (
-  SELECT 
-    *,
-    LAST_VALUE(ctx_last_dales_date IGNORE NULLS) OVER (
-      PARTITION BY item_id, store_id
-      ORDER BY ctx_date
-      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) AS last_sale_ff
-  FROM last_date_dataframe
-  ORDER BY store_id, item_id, ctx_date
-),
-daily_level_patterns AS (
-  SELECT 
-    ctx_date,
-    daily_sales,
-    store_id,
-    dept_id,
-    item_id,
-    last_sale_ff,
-    DATE_DIFF(ctx_date, last_sale_ff, DAY) AS days_since_last_sale
-  FROM last_day_ff_df
-  ORDER BY store_id, item_id, ctx_date
-),
-item_level AS (
-  SELECT 
-    dept_id AS ctx_dept_id,
-    store_id AS ctx_store_id, 
-    item_id AS ctx_item_id, 
-    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
-    MIN(daily_sales) AS fea_item_min_daily_sales,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(1)] AS fea_item_daily_salesq25,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(2)] AS fea_item_daily_salesq50,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(3)] AS fea_item_daily_salesq75,
-    MAX(daily_sales) AS fea_item_max_daily_sales,
-    MIN(days_since_last_sale) AS fea_item_min_days_since_last_sale,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(1)] AS fea_item_days_since_last_saleq25,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(2)] AS fea_item_days_since_last_saleq50,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(3)] AS fea_item_days_since_last_saleq75,
-    MAX(days_since_last_sale) AS fea_item_max_days_since_last_sale
-  FROM daily_level_patterns
-  GROUP BY 
-    store_id,
-    item_id,
-    dept_id,
-    DATE_TRUNC(ctx_date, MONTH)
-),
-dept_level AS (
-  SELECT 
-    dept_id AS ctx_dept_id,
-    store_id AS ctx_store_id, 
-    DATE_TRUNC(ctx_date, MONTH) AS ctx_date_month,
-    MIN(daily_sales) AS fea_dept_min_daily_sales,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(1)] AS fea_dept_daily_salesq25,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(2)] AS fea_dept_daily_salesq50,
-    APPROX_QUANTILES(daily_sales, 4)[OFFSET(3)] AS fea_dept_daily_salesq75,
-    MAX(daily_sales) AS fea_dept_max_daily_sales,
-    MIN(days_since_last_sale) AS fea_dept_min_days_since_last_sale,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(1)] AS fea_dept_days_since_last_saleq25,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(2)] AS fea_dept_days_since_last_saleq50,
-    APPROX_QUANTILES(days_since_last_sale, 4)[OFFSET(3)] AS fea_dept_days_since_last_saleq75,
-    MAX(days_since_last_sale) AS fea_dept_max_days_since_last_sale
-  FROM daily_level_patterns
-  GROUP BY 
-    store_id,
-    dept_id,
-    DATE_TRUNC(ctx_date, MONTH)
-)
-SELECT 
-  it.*,
-  de.* EXCEPT(ctx_date_month, ctx_dept_id, ctx_store_id),
-  AVG(fea_item_daily_salesq75) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
-  ) AS fea_item_daily_salesq75_roll_12m,
-  AVG(fea_item_daily_salesq75) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-  ) AS fea_item_daily_salesq75_roll_6m,
-  AVG(fea_item_daily_salesq75) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
-  ) AS fea_item_daily_salesq75_roll_3m,
-  MAX(fea_item_days_since_last_saleq50) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
-  ) AS fea_item_days_since_last_saleq50_roll_12m,
-  MAX(fea_item_days_since_last_saleq50) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-  ) AS fea_item_days_since_last_saleq50_roll_6m,
-  MAX(fea_item_days_since_last_saleq50) OVER (
-    PARTITION BY it.ctx_item_id, it.ctx_store_id 
-    ORDER BY it.ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
-  ) AS fea_item_days_since_last_saleq50_roll_3m
-FROM item_level it
-LEFT JOIN dept_level de
-  ON it.ctx_date_month = de.ctx_date_month
-  AND it.ctx_store_id = de.ctx_store_id
-  AND it.ctx_dept_id = de.ctx_dept_id
-
--- if this works I will expand to department and to store level. This will also be the new basics for stockout filter.
-
-WITH last_date_dataframe AS (
-  SELECT 
   *,
   CASE 
     WHEN daily_sales >0 
@@ -198,34 +87,32 @@ dept_level AS (
 SELECT 
 it.*,
 de.* EXCEPT(ctx_date_month, ctx_dept_id, ctx_store_id),
-AVG(fea_item_daily_salesq75) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
-) AS fea_item_daily_salesq75_roll_12m,
-AVG(fea_item_daily_salesq75) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-) AS fea_item_daily_salesq75_roll_6m,
-AVG(fea_item_daily_salesq75) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
-) AS fea_item_daily_salesq75_roll_3m,
-MAX(fea_item_days_since_last_saleq50) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW
-) AS fea_item_days_since_last_saleq50_roll_12m,
-MAX(fea_item_days_since_last_saleq50) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-) AS fea_item_days_since_last_saleq50_roll_6m,
-MAX(fea_item_days_since_last_saleq50) OVER (
-  Partition By it.ctx_item_id, it.ctx_store_id 
-  ORDER BY it.ctx_date_month ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
-) AS fea_item_days_since_last_saleq50_roll_3m,
+-- item timeseries daily sales.
+${window_functions.generateRollAvgSTDEVPartition("fea_item_min_daily_sales")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq25")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq50")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq75")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_max_daily_sales")},
+-- item timeseries days without sales.
+${window_functions.generateRollAvgSTDEVPartition("fea_item_min_days_since_last_sale")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq25")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq50")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_days_since_last_saleq75")},
+${window_functions.generateRollAvgSTDEVPartition("fea_item_max_days_since_last_sale")},
+-- dept timeseries daily sales.
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_min_daily_sales")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq25")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq50")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_daily_salesq75")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_max_daily_sales")},
+-- dept timeseries days without sales.
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_min_days_since_last_sale")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq25")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq50")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq75")},
+${window_functions.generateRollAvgSTDEVPartition("fea_dept_max_days_since_last_sale")},
 FROM item_level it
 LEFT JOIN dept_level de
 ON it.ctx_date_month = de.ctx_date_month
 AND it.ctx_store_id = de.ctx_store_id
 AND it.ctx_dept_id = de.ctx_dept_id
-
--- if this works I will expand to department and to store level. This will also be the new basics for stockout filter.
