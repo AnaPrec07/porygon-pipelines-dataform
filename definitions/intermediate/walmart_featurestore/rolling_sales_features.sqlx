@@ -27,7 +27,7 @@ WITH cleanned_targets AS (
     ON long.ctx_item_id = tgt.ctx_item_id
     AND long.ctx_date_month = tgt.ctx_date_month
     WHERE tgt.ctx_date_month >= long.ctx_first_date
-    AND tgt.ctx_date_month = "CA_1"
+    AND tgt.ctx_store_id = "CA_1"
 ), item_sales AS (
   SELECT
   ctx_item_id,
@@ -117,6 +117,22 @@ SELECT
   it.fea_item_monthly_sales_lag_2_months,
   it.fea_item_monthly_sales_lag_3_months,
   it.fea_item_monthly_sales_lag_4_months,
+  CORR(
+    it.fea_item_monthly_sales, 
+    it.fea_item_monthly_sales_lag_1_months
+  ) AS fea_autocorrelation_lag_1,
+  CORR(
+    it.fea_item_monthly_sales, 
+    it.fea_item_monthly_sales_lag_2_months
+  ) AS fea_autocorrelation_lag_2,
+  CORR(
+    it.fea_item_monthly_sales, 
+    it.fea_item_monthly_sales_lag_3_months
+  ) AS fea_autocorrelation_lag_3,
+  CORR(
+    it.fea_item_monthly_sales, 
+    it.fea_item_monthly_sales_lag_4_months
+  ) AS fea_autocorrelation_lag_4,
   SAFE_DIVIDE(it.fea_item_monthly_sales - it.fea_item_monthly_sales_lag_1_months, it.fea_item_monthly_sales_lag_1_months) AS fea_item_monthly_sales_percent_change,
   it.fea_num_days_item_is_zero_sales_roll_avg_3_months,
   it.fea_num_days_item_is_zero_sales_roll_avg_6_months,
@@ -159,4 +175,3 @@ AND it.ctx_state_id = it_state_ts.ctx_state_id
 LEFT JOIN item_total_ts it_all
 ON it.ctx_date_month = it_all.ctx_date_month
 AND it.ctx_item_id = it_all.ctx_item_id
-
