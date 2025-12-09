@@ -104,7 +104,7 @@ item_total_ts AS (
     ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_monthly_sales", partitionBy="ctx_item_id")},
     ${window_functions.generateRollAvgSTDEVPartition("fea_all_item_num_days_is_zero_sales", partitionBy="ctx_item_id")},
   FROM item_total it
-),
+)
 SELECT 
   it.ctx_date_month,
   it.ctx_item_id,
