@@ -45,11 +45,14 @@ config {
     is_outlier_3m_tgt,
 
     -- stockout filters
-
+    is_stockout,
+    is_stockout_lead_1,
+    is_stockout_lead_2,
+    is_stockout_lead_3,
+    is_stockout_tgt,
 
     -- item_longevity_filters
     ctx_first_date,
-    fea_month_difference,
     is_one_year_old,
     is_six_months_old,
     is_three_months_old,
