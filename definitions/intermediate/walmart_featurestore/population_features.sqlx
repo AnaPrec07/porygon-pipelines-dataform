@@ -6,13 +6,12 @@ config {
   assertions: {
     nonNull: [
       "ctx_date_month",
-      "ctx_item_id",
+      "ctx_state_id",
       "ctx_store_id",
     ],
     uniqueKey: [
       "ctx_date_month",
-      "ctx_item_id",
-      "ctx_store_id",
+      "ctx_state_id",
     ],
   }
 }
