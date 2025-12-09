@@ -2,7 +2,19 @@ config {
   type: "table",
   schema: "walmart_training_tables",
   description: "walmart master table.",
-  tags: ["intermediate", "master"]
+  tags: ["intermediate", "master"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 
@@ -859,7 +871,6 @@ LEFT JOIN ${ref("historical_stockout_features")} histckt_feas
 LEFT JOIN ${ref("item_longevity_features")} long_feas
     ON long_feas.ctx_date_month = tgt.ctx_date_month
     AND long_feas.ctx_item_id = tgt.ctx_item_id
-    AND long_feas.ctx_store_id = tgt.ctx_store_id
 LEFT JOIN ${ref("seasonality_correlation")} sea_feas
     ON sea_feas.ctx_date_month = tgt.ctx_date_month
     AND sea_feas.ctx_item_id = tgt.ctx_item_id
