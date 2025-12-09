@@ -33,14 +33,7 @@ config {
     is_outlier_3m_tgt,
 
     -- stockout filters
-    is_stockout_month_lag_sale,
-    is_stockout_month_lead_sale,
-    fea_max_days_since_last_sale,
-    fea_min_days_to_next_sale,
-    stockout_threshold_q97,
-    is_stockout_tgt_lag,
-    is_stockout_tgt_lead,
-    is_incomplete_3m_tgt,
+
 
     -- item_longevity_filters
     ctx_first_date,
@@ -646,6 +639,182 @@ config {
     fea_all_item_monthly_sales_roll_std_3_months,
     fea_all_item_monthly_sales_roll_std_6_months,
     fea_all_item_monthly_sales_roll_std_12_months
+
+    -- autocorrelation features:
+    fea_autocorrelation_lag1,
+    fea_autocorrelation_lag2,
+    fea_autocorrelation_lag3,
+    fea_autocorrelation_lag4,
+
+    -- department correlation features
+    fea_ca1_hobbies_1_avg,
+    fea_ca1_hobbies_2_avg,
+    fea_ca1_household_1_avg,
+    fea_ca1_household_2_avg,
+    fea_ca1_foods_1_avg,
+    fea_ca1_foods_2_avg,
+    fea_ca1_foods_3_avg,
+    fea_ca1_hobbies1_correlation,
+    fea_ca1_hobbies2_correlation,
+    fea_ca1_household1_correlation,
+    fea_ca1_household2_correlation,
+    fea_ca1_foods1_correlation,
+    fea_ca1_foods2_correlation,
+    fea_ca1_foods3_correlation,
+
+    -- historical stockout features
+    fea_item_min_daily_sales,
+    fea_item_daily_salesq25,
+    fea_item_daily_salesq50,
+    fea_item_daily_salesq75,
+    fea_item_max_daily_sales,
+    fea_item_min_days_since_last_sale,
+    fea_item_days_since_last_saleq25,
+    fea_item_days_since_last_saleq50,
+    fea_item_days_since_last_saleq75,
+    fea_item_max_days_since_last_sale,
+    fea_dept_min_daily_sales,
+    fea_dept_daily_salesq25,
+    fea_dept_daily_salesq50,
+    fea_dept_daily_salesq75,
+    fea_dept_max_daily_sales,
+    fea_dept_min_days_since_last_sale,
+    fea_dept_days_since_last_saleq25,
+    fea_dept_days_since_last_saleq50,
+    fea_dept_days_since_last_saleq75,
+    fea_dept_max_days_since_last_sale,
+    fea_item_min_daily_sales_roll_avg_3_months,
+    fea_item_min_daily_sales_roll_std_3_months,
+    fea_item_min_daily_sales_roll_avg_6_months,
+    fea_item_min_daily_sales_roll_std_6_months,
+    fea_item_min_daily_sales_roll_avg_12_months,
+    fea_item_min_daily_sales_roll_std_12_months,
+    fea_item_daily_salesq25_roll_avg_3_months,
+    fea_item_daily_salesq25_roll_std_3_months,
+    fea_item_daily_salesq25_roll_avg_6_months,
+    fea_item_daily_salesq25_roll_std_6_months,
+    fea_item_daily_salesq25_roll_avg_12_months,
+    fea_item_daily_salesq25_roll_std_12_months,
+    fea_item_daily_salesq50_roll_avg_3_months,
+    fea_item_daily_salesq50_roll_std_3_months,
+    fea_item_daily_salesq50_roll_avg_6_months,
+    fea_item_daily_salesq50_roll_std_6_months,
+    fea_item_daily_salesq50_roll_avg_12_months,
+    fea_item_daily_salesq50_roll_std_12_months,
+    fea_item_daily_salesq75_roll_avg_3_months,
+    fea_item_daily_salesq75_roll_std_3_months,
+    fea_item_daily_salesq75_roll_avg_6_months,
+    fea_item_daily_salesq75_roll_std_6_months,
+    fea_item_daily_salesq75_roll_avg_12_months,
+    fea_item_daily_salesq75_roll_std_12_months,
+    fea_item_max_daily_sales_roll_avg_3_months,
+    fea_item_max_daily_sales_roll_std_3_months,
+    fea_item_max_daily_sales_roll_avg_6_months,
+    fea_item_max_daily_sales_roll_std_6_months,
+    fea_item_max_daily_sales_roll_avg_12_months,
+    fea_item_max_daily_sales_roll_std_12_months,
+    fea_item_min_days_since_last_sale_roll_avg_3_months,
+    fea_item_min_days_since_last_sale_roll_std_3_months,
+    fea_item_min_days_since_last_sale_roll_avg_6_months,
+    fea_item_min_days_since_last_sale_roll_std_6_months,
+    fea_item_min_days_since_last_sale_roll_avg_12_months,
+    fea_item_min_days_since_last_sale_roll_std_12_months,
+    fea_item_days_since_last_saleq25_roll_avg_3_months,
+    fea_item_days_since_last_saleq25_roll_std_3_months,
+    fea_item_days_since_last_saleq25_roll_avg_6_months,
+    fea_item_days_since_last_saleq25_roll_std_6_months,
+    fea_item_days_since_last_saleq25_roll_avg_12_months,
+    fea_item_days_since_last_saleq25_roll_std_12_months,
+    fea_item_days_since_last_saleq50_roll_avg_3_months,
+    fea_item_days_since_last_saleq50_roll_std_3_months,
+    fea_item_days_since_last_saleq50_roll_avg_6_months,
+    fea_item_days_since_last_saleq50_roll_std_6_months,
+    fea_item_days_since_last_saleq50_roll_avg_12_months,
+    fea_item_days_since_last_saleq50_roll_std_12_months,
+    fea_item_days_since_last_saleq75_roll_avg_3_months,
+    fea_item_days_since_last_saleq75_roll_std_3_months,
+    fea_item_days_since_last_saleq75_roll_avg_6_months,
+    fea_item_days_since_last_saleq75_roll_std_6_months,
+    fea_item_days_since_last_saleq75_roll_avg_12_months,
+    fea_item_days_since_last_saleq75_roll_std_12_months,
+    fea_item_max_days_since_last_sale_roll_avg_3_months,
+    fea_item_max_days_since_last_sale_roll_std_3_months,
+    fea_item_max_days_since_last_sale_roll_avg_6_months,
+    fea_item_max_days_since_last_sale_roll_std_6_months,
+    fea_item_max_days_since_last_sale_roll_avg_12_months,
+    fea_item_max_days_since_last_sale_roll_std_12_months,
+    fea_dept_min_daily_sales_roll_avg_3_months,
+    fea_dept_min_daily_sales_roll_std_3_months,
+    fea_dept_min_daily_sales_roll_avg_6_months,
+    fea_dept_min_daily_sales_roll_std_6_months,
+    fea_dept_min_daily_sales_roll_avg_12_months,
+    fea_dept_min_daily_sales_roll_std_12_months,
+    fea_dept_daily_salesq25_roll_avg_3_months,
+    fea_dept_daily_salesq25_roll_std_3_months,
+    fea_dept_daily_salesq25_roll_avg_6_months,
+    fea_dept_daily_salesq25_roll_std_6_months,
+    fea_dept_daily_salesq25_roll_avg_12_months,
+    fea_dept_daily_salesq25_roll_std_12_months,
+    fea_dept_daily_salesq50_roll_avg_3_months,
+    fea_dept_daily_salesq50_roll_std_3_months,
+    fea_dept_daily_salesq50_roll_avg_6_months,
+    fea_dept_daily_salesq50_roll_std_6_months,
+    fea_dept_daily_salesq50_roll_avg_12_months,
+    fea_dept_daily_salesq50_roll_std_12_months,
+    fea_dept_daily_salesq75_roll_avg_3_months,
+    fea_dept_daily_salesq75_roll_std_3_months,
+    fea_dept_daily_salesq75_roll_avg_6_months,
+    fea_dept_daily_salesq75_roll_std_6_months,
+    fea_dept_daily_salesq75_roll_avg_12_months,
+    fea_dept_daily_salesq75_roll_std_12_months,
+    fea_dept_max_daily_sales_roll_avg_3_months,
+    fea_dept_max_daily_sales_roll_std_3_months,
+    fea_dept_max_daily_sales_roll_avg_6_months,
+    fea_dept_max_daily_sales_roll_std_6_months,
+    fea_dept_max_daily_sales_roll_avg_12_months,
+    fea_dept_max_daily_sales_roll_std_12_months,
+    fea_dept_min_days_since_last_sale_roll_avg_3_months,
+    fea_dept_min_days_since_last_sale_roll_std_3_months,
+    fea_dept_min_days_since_last_sale_roll_avg_6_months,
+    fea_dept_min_days_since_last_sale_roll_std_6_months,
+    fea_dept_min_days_since_last_sale_roll_avg_12_months,
+    fea_dept_min_days_since_last_sale_roll_std_12_months,
+    fea_dept_days_since_last_saleq25_roll_avg_3_months,
+    fea_dept_days_since_last_saleq25_roll_std_3_months,
+    fea_dept_days_since_last_saleq25_roll_avg_6_months,
+    fea_dept_days_since_last_saleq25_roll_std_6_months,
+    fea_dept_days_since_last_saleq25_roll_avg_12_months,
+    fea_dept_days_since_last_saleq25_roll_std_12_months,
+    fea_dept_days_since_last_saleq50_roll_avg_3_months,
+    fea_dept_days_since_last_saleq50_roll_std_3_months,
+    fea_dept_days_since_last_saleq50_roll_avg_6_months,
+    fea_dept_days_since_last_saleq50_roll_std_6_months,
+    fea_dept_days_since_last_saleq50_roll_avg_12_months,
+    fea_dept_days_since_last_saleq50_roll_std_12_months,
+    fea_dept_days_since_last_saleq75_roll_avg_3_months,
+    fea_dept_days_since_last_saleq75_roll_std_3_months,
+    fea_dept_days_since_last_saleq75_roll_avg_6_months,
+    fea_dept_days_since_last_saleq75_roll_std_6_months,
+    fea_dept_days_since_last_saleq75_roll_avg_12_months,
+    fea_dept_days_since_last_saleq75_roll_std_12_months,
+    fea_dept_max_days_since_last_sale_roll_avg_3_months,
+    fea_dept_max_days_since_last_sale_roll_std_3_months,
+    fea_dept_max_days_since_last_sale_roll_avg_6_months,
+    fea_dept_max_days_since_last_sale_roll_std_6_months,
+    fea_dept_max_days_since_last_sale_roll_avg_12_months,
+    fea_dept_max_days_since_last_sale_roll_std_12_months,
+
+    -- longevity features:
+    fea_month_difference,
+
+    -- seasonality correlation features:
+    fea_seasonality_correlation_lag3,
+    fea_seasonality_if_correlated,
+
+    -- trend correlation features:
+    fea_3m_trend_correlation,
+    fea_6m_trend_correlation,
+
 FROM ${ref("target_store_item_monthly")} tgt
 
 -- join features
@@ -675,6 +844,30 @@ LEFT JOIN ${ref("rolling_sales_features")} roll_feas
     AND roll_feas.ctx_store_id = tgt.ctx_store_id
 LEFT JOIN ${ref("global_rolling_sales_features")} glob_feas
     ON glob_feas.ctx_date_month = tgt.ctx_date_month
+LEFT JOIN ${ref("autocorrelation_features")} aucorr_feas
+    ON aucorr_feas.ctx_date_month = tgt.ctx_date_month
+    AND aucorr_feas.ctx_item_id = tgt.ctx_item_id
+    AND aucorr_feas.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN ${ref("dept_sales_correlations")} deptcorr_feas
+    ON deptcorr_feas.ctx_date_month = tgt.ctx_date_month
+    AND deptcorr_feas.ctx_item_id = tgt.ctx_item_id
+    AND deptcorr_feas.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN ${ref("historical_stockout_features")} histckt_feas
+    ON histckt_feas.ctx_date_month = tgt.ctx_date_month
+    AND histckt_feas.ctx_item_id = tgt.ctx_item_id
+    AND histckt_feas.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN ${ref("item_longevity_features")} long_feas
+    ON long_feas.ctx_date_month = tgt.ctx_date_month
+    AND long_feas.ctx_item_id = tgt.ctx_item_id
+    AND long_feas.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN ${ref("seasonality_correlation")} sea_feas
+    ON sea_feas.ctx_date_month = tgt.ctx_date_month
+    AND sea_feas.ctx_item_id = tgt.ctx_item_id
+    AND sea_feas.ctx_store_id = tgt.ctx_store_id
+LEFT JOIN ${ref("trend_correlation_features")} trend_feas
+    ON trend_feas.ctx_date_month = tgt.ctx_date_month
+    AND trend_feas.ctx_item_id = tgt.ctx_item_id
+    AND trend_feas.ctx_store_id = tgt.ctx_store_id
 
 -- join filter_out_outliers
 LEFT JOIN ${ref("stockout_filter")} stk
