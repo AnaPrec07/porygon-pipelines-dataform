@@ -229,10 +229,6 @@ config {
     fea_item_vs_state_price_ratio_roll_std_6_months,
     fea_item_vs_state_price_ratio_roll_avg_12_months,
     fea_item_vs_state_price_ratio_roll_std_12_months,
-    fea_autocorrelation_lag1,
-    fea_autocorrelation_lag2,
-    fea_autocorrelation_lag3,
-    fea_autocorrelation_lag4,
 
     -- encoded features
     fea_state_id_encoded,
