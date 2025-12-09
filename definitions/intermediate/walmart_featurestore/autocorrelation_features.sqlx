@@ -2,7 +2,20 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   name: "autocorrelation_features",
-  description: "Autocorrelation features for item/store/month."
+  description: "Autocorrelation features for item/store/month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 WITH sales_lags AS (

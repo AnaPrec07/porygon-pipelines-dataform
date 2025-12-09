@@ -2,7 +2,20 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   name: "trend_correlation_features",
-  description: "Trend correlation features for item/store/month."
+  description: "Trend correlation features for item/store/month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 WITH ts AS (

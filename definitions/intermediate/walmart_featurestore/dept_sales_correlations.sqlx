@@ -2,7 +2,20 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   name: "dept_sales_correlations",
-  description: "Correlations of department sales with other departments by store and month."
+  description: "Correlations of department sales with other departments by store and month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 WITH dept_monthly_sales AS (

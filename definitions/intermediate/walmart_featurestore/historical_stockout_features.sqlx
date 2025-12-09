@@ -3,7 +3,20 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   name: "historical_stockout_features",
-  description: "Historical stockout features for CA_1 store, item and department level."
+  description: "Historical stockout features for CA_1 store, item and department level.",
+    tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 WITH last_date_dataframe AS (

@@ -2,15 +2,17 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Population features.",
-  tags: ["intermediate"],
+  tags: ["intermediate", "walmart", "features"],
   assertions: {
     nonNull: [
       "ctx_date_month",
-      "ctx_state_id"
+      "ctx_item_id",
+      "ctx_store_id",
     ],
     uniqueKey: [
       "ctx_date_month",
-      "ctx_state_id"
+      "ctx_item_id",
+      "ctx_store_id",
     ],
   }
 }

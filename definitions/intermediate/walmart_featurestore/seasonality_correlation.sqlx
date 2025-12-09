@@ -2,7 +2,20 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   name: "seasonality_correlation",
-  description: "Seasonality correlation features for item/store/month."
+  description: "Seasonality correlation features for item/store/month.",
+  tags: ["intermediate", "walmart", "features"],
+  assertions: {
+    nonNull: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+    uniqueKey: [
+      "ctx_date_month",
+      "ctx_item_id",
+      "ctx_store_id",
+    ],
+  }
 }
 
 WITH ts AS (

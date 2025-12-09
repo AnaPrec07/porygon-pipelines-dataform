@@ -2,7 +2,20 @@ config {
     type: "table",
     schema: "walmart_featurestore",
     name: "item_longevity_features",
-    description: "Item longevity features for CA_1 store."
+    description: "Item longevity features for CA_1 store.",
+    tags: ["intermediate", "walmart", "features"],
+    assertions: {
+        nonNull: [
+        "ctx_date_month",
+        "ctx_item_id",
+        "ctx_store_id",
+        ],
+        uniqueKey: [
+        "ctx_date_month",
+        "ctx_item_id",
+        "ctx_store_id",
+        ],
+    }
 }
 
 WITH item_dates_nonzero_sales AS (

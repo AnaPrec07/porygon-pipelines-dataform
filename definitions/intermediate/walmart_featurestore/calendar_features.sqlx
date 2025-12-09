@@ -2,14 +2,14 @@ config {
   type: "table",
   schema: "walmart_featurestore",
   description: "Calendar features.",
-  tags: ["intermediate"],
+  tags: ["intermediate", "walmart", "features"],
   assertions: {
     nonNull: [
-        "ctx_date_month"
+      "ctx_date_month",
     ],
     uniqueKey: [
-        "ctx_date_month"
-    ]
+      "ctx_date_month",
+    ],
   }
 }
 
