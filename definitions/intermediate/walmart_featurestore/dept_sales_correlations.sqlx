@@ -11,7 +11,7 @@ WITH dept_monthly_sales AS (
     ctx_dept_id,
     ctx_date_month,
     SUM(tgt_monthly_sales) AS dept_monthly_sales
-  FROM ${ref("walmart_targets_and_filters.target_store_item_monthly")}
+  FROM ${ref("target_store_item_monthly")}
   GROUP BY ctx_store_id, ctx_dept_id, ctx_date_month
 ),
 dept_pairs AS (
