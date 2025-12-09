@@ -27,7 +27,7 @@ WITH cleanned_targets AS (
     tgt.tgt_monthly_sales,
     tgt.tgt_days_is_zero_sales
     FROM ${ref("target_store_item_monthly")} tgt 
-    LEFT JOIN `porygon-pipelines.walmart_targets_and_filters.item_longevity_filters` long
+    LEFT JOIN ${ref("item_longevity_filters")} long
     ON long.ctx_item_id = tgt.ctx_item_id
     AND long.ctx_date_month = tgt.ctx_date_month
     WHERE tgt.ctx_date_month >= long.ctx_first_date

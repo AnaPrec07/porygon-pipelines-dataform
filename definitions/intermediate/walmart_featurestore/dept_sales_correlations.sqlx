@@ -18,36 +18,6 @@ config {
   }
 }
 
-WITH dept_monthly_sales AS (
-  SELECT
-    ctx_store_id,
-    ctx_dept_id,
-    ctx_date_month,
-    SUM(tgt_monthly_sales) AS dept_monthly_sales
-  FROM ${ref("target_store_item_monthly")}
-  GROUP BY ctx_store_id, ctx_dept_id, ctx_date_month
-),
-dept_pairs AS (
-  SELECT
-    a.ctx_store_id,
-    a.ctx_dept_id AS dept_a,
-    b.ctx_dept_id AS dept_b,
-    a.ctx_date_month,
-    a.dept_monthly_sales AS sales_a,
-    b.dept_monthly_sales AS sales_b
-  FROM dept_monthly_sales a
-  JOIN dept_monthly_sales b
-    ON a.ctx_store_id = b.ctx_store_id
-    AND a.ctx_date_month = b.ctx_date_month
-    AND a.ctx_dept_id < b.ctx_dept_id
-)
-SELECT
-  ctx_store_id,
-  dept_a,
-  dept_b,
-  CORR(sales_a, sales_b) OVER (PARTITION BY ctx_store_id, dept_a, dept_b) AS dept_sales_corr
-FROM dept_pairs
---CREATE OR REPLACE TABLE `porygon-pipelines.walmart_featurestore.dept_sales_correlation_features` AS
 WITH department_sales AS (
   SELECT 
     ctx_date_month,

@@ -4,7 +4,7 @@ config {
   schema: "walmart_featurestore",
   name: "historical_stockout_features",
   description: "Historical stockout features for CA_1 store, item and department level.",
-    tags: ["intermediate", "walmart", "features"],
+  tags: ["intermediate", "walmart", "features"],
   assertions: {
     nonNull: [
       "ctx_date_month",
@@ -96,10 +96,19 @@ dept_level AS (
   store_id,
   dept_id,
   DATE_TRUNC(ctx_date, MONTH)
+),
+joined_ctex AS (
+  SELECT 
+  it.*,
+  de.* EXCEPT(ctx_date_month, ctx_dept_id, ctx_store_id),
+  FROM item_level it
+  LEFT JOIN dept_level de
+  ON it.ctx_date_month = de.ctx_date_month
+  AND it.ctx_store_id = de.ctx_store_id
+  AND it.ctx_dept_id = de.ctx_dept_id
 )
-SELECT 
-it.*,
-de.* EXCEPT(ctx_date_month, ctx_dept_id, ctx_store_id),
+SELECT
+jcte.*,
 -- item timeseries daily sales.
 ${window_functions.generateRollAvgSTDEVPartition("fea_item_min_daily_sales")},
 ${window_functions.generateRollAvgSTDEVPartition("fea_item_daily_salesq25")},
@@ -124,8 +133,4 @@ ${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq
 ${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq50")},
 ${window_functions.generateRollAvgSTDEVPartition("fea_dept_days_since_last_saleq75")},
 ${window_functions.generateRollAvgSTDEVPartition("fea_dept_max_days_since_last_sale")},
-FROM item_level it
-LEFT JOIN dept_level de
-ON it.ctx_date_month = de.ctx_date_month
-AND it.ctx_store_id = de.ctx_store_id
-AND it.ctx_dept_id = de.ctx_dept_id
+FROM joined_ctex jcte

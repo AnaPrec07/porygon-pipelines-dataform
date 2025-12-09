@@ -18,24 +18,6 @@ config {
   }
 }
 
-WITH sales_lags AS (
-  SELECT
-    ctx_item_id,
-    ctx_store_id,
-    ctx_date_month,
-    fea_item_monthly_sales,
-    LAG(fea_item_monthly_sales, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS lag_1,
-    LAG(fea_item_monthly_sales, 2) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS lag_2
-  FROM ${ref("walmart_master_table")}
-)
-SELECT
-  ctx_item_id,
-  ctx_store_id,
-  ctx_date_month,
-  CORR(fea_item_monthly_sales, lag_1) OVER (PARTITION BY ctx_item_id, ctx_store_id) AS autocorr_lag1,
-  CORR(fea_item_monthly_sales, lag_2) OVER (PARTITION BY ctx_item_id, ctx_store_id) AS autocorr_lag2
-FROM sales_lags
-CREATE OR REPLACE TABLE `porygon-pipelines.walmart_featurestore.sales_autocorrelation_features` AS
 WITH ts AS (
   SELECT
     ctx_item_id,
