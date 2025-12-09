@@ -8,7 +8,7 @@ config {
 WITH remove_zero_sales_days AS (
   SELECT 
     *
-  FROM ${ref("walmart_raw.daily_sales_melted")}
+  FROM ${ref("daily_sales_melted")}
   WHERE daily_sales > 0
     AND store_id = "CA_1"
 ),

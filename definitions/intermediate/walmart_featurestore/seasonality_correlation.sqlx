@@ -14,8 +14,8 @@ WITH ts AS (
     ROUND(fea_month_sin, 2)+1 AS msev,
     tgt_monthly_sales_sum_3_next_months,
     is_stockout_tgt
-  FROM ${ref("walmart_training_tables.walmart_master_table")} m
-  LEFT JOIN ${ref("walmart_targets_and_filters.stockout_filter")} stf
+  FROM ${ref("walmart_master_table")} m
+  LEFT JOIN ${ref("stockout_filter")} stf
       ON m.ctx_item_id = stf.ctx_item_id
       AND m.ctx_date_month = stf.ctx_date_month
       AND m.ctx_store_id = stf.ctx_store_id

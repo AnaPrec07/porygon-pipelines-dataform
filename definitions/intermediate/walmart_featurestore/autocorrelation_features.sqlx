@@ -13,7 +13,7 @@ WITH sales_lags AS (
     fea_item_monthly_sales,
     LAG(fea_item_monthly_sales, 1) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS lag_1,
     LAG(fea_item_monthly_sales, 2) OVER (PARTITION BY ctx_item_id, ctx_store_id ORDER BY ctx_date_month) AS lag_2
-  FROM ${ref("walmart_training_tables.walmart_master_table")}
+  FROM ${ref("walmart_master_table")}
 )
 SELECT
   ctx_item_id,
@@ -109,4 +109,4 @@ SELECT
     )
   ) AS fea_autocorrelation_lag4
 FROM rolling
-ORDER BY ctx_item_id, ctx_store_id, ctx_date_month;
+ORDER BY ctx_item_id, ctx_store_id, ctx_date_month

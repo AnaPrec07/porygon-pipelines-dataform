@@ -9,7 +9,7 @@ WITH item_dates_nonzero_sales AS (
     SELECT 
         ctx_item_id,
         MIN(ctx_date_month) AS first_date
-    FROM ${ref("walmart_targets_and_filters.target_store_item_monthly")}
+    FROM ${ref("target_store_item_monthly")}
     WHERE ctx_store_id = "CA_1"
         AND tgt_monthly_sales > 0
     GROUP BY ctx_item_id
@@ -22,7 +22,7 @@ SELECT
     DATE_DIFF(itm.ctx_date_month, first_date, MONTH) > 12 AS is_one_year_old,
     DATE_DIFF(itm.ctx_date_month, first_date, MONTH) > 6 AS is_six_months_old,
     DATE_DIFF(itm.ctx_date_month, first_date, MONTH) > 3 AS is_three_months_old
-FROM ${ref("walmart_targets_and_filters.target_store_item_monthly")} itm
+FROM ${ref("target_store_item_monthly")} itm
 LEFT JOIN item_dates_nonzero_sales nonz
     ON itm.ctx_item_id = nonz.ctx_item_id
 WHERE itm.ctx_store_id = "CA_1"

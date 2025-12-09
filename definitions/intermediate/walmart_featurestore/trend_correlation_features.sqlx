@@ -12,7 +12,7 @@ WITH ts AS (
     m.ctx_date_month,
     fea_item_monthly_sales AS x,
     CAST(fea_detrender AS INTEGER) AS msev
-  FROM ${ref("walmart_training_tables.walmart_master_table")} m
+  FROM ${ref("walmart_master_table")} m
 ),
 rolling_3 AS (
   SELECT
